@@ -156,7 +156,7 @@ export default function Home() {
 					:
 						<div className='mx-10'>
 							<div className='items-center flex justify-center'>
-								<Image width="200" height="200" alt="Logo du conseil" src="/logo.png"/>
+								<Image width="390" height="390" alt="Logo du conseil" src="/logo.png"/>
 							</div>
 							<div className='my-2 p-2 text-xl flex flex-col items-center text-center justify-center'>
 								<div className='my-5'>Lycee Francais de Vienne</div>

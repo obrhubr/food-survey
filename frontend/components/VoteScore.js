@@ -14,7 +14,7 @@ export default function VoteScore(props) {
 
                 <div className='text-lg text-white my-5 mx-20 text-center'>
                     <div id='vote-1' onClick={props.setVote} className='bg-red-400 active:bg-red-500 rounded-lg p-3 shadow-md my-5 cursor-pointer'>
-                        1
+                        1 (pas aimé)
                     </div>
                     <div id='vote-2' onClick={props.setVote} className='bg-orange-400 active:bg-orange-500 rounded-lg p-3 shadow-md my-5 cursor-pointer'>
                         2
@@ -26,7 +26,7 @@ export default function VoteScore(props) {
                         4
                     </div>
                     <div id='vote-5' onClick={props.setVote} className='bg-green-400 active:bg-green-500 rounded-lg p-3 shadow-md my-5 cursor-pointer'>
-                        5
+                        5 (beacoup aimé)
                     </div>
                 </div>
             </div>
