@@ -5,6 +5,7 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router(); 
 const cache = require('memory-cache');
+const { v4 } = require('uuid');
 
 // require logger
 const { logger } = require('../lib/logger');
@@ -42,6 +43,7 @@ router.post('/vote', async (req, res) => {
     }
 
     if(req.body.vote == null || req.body.class == null || typeof req.body.vote != "number" || typeof req.body.class != "number") {
+        logger.log('info', `[${res.locals.trace_id}] ROUTE: /votes/vote - Not all fields filled out. `);
         res.status(500).send({'error': 'Error while processing your vote, try again.'});
         return;
     }
@@ -64,14 +66,25 @@ router.post('/vote', async (req, res) => {
     }
 
     try {
-        logger.log('debug', `[${res.locals.trace_id}] ROUTE: /votes/vote - Querying database`);
-        const dbres = await db.vote_add(connection, iso_date, req.body.vote, req.body.class);
-
-        // Set cookie to voted
-        res.json({
+        // data
+        var data = {
             vote: req.body.vote,
             class: req.body.class
-        });
+        }
+
+        // give each user a unique token, to identify them on future votes
+        if(req.body.user_token == null) {
+            req.body.user_token = v4();
+            data.user_token = req.body.user_token;
+        } else {
+            data.user_token = req.body.user_token;
+        }
+
+        logger.log('debug', `[${res.locals.trace_id}] ROUTE: /votes/vote - Querying database`);
+        const dbres = await db.vote_add(connection, iso_date, req.body.vote, req.body.class, req.header('X-Forwarded-For'), req.body.user_token);
+
+        // Set cookie to voted
+        res.json(data);
         return;
     } catch (err) {
         logger.log('error', `[${res.locals.trace_id}] ROUTE: /votes/vote - Error while saving to the database. `);

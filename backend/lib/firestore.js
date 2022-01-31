@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { v4 } = require('uuid');
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
 const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
@@ -114,7 +115,7 @@ async function get_today_menu(connection, iso_date) {
     return {l, data: doc.data()};
 }
 
-async function vote_add(connection, iso_date, vote, student_class) {
+async function vote_add(connection, iso_date, vote, student_class, ip, user_token) {
     const docRef = await connection.collection('votes').doc(v4());
 
     var data = {
@@ -123,6 +124,12 @@ async function vote_add(connection, iso_date, vote, student_class) {
         class: student_class,
         createdAt: new Date().toISOString()
     };
+    if(process.env.ENVIRONMENT == "PROD") {
+        data.ip = ip;
+    }
+    if(user_token != null) {
+        data.user_token = user_token;
+    }
     await docRef.set(data);
 
     return data;
