@@ -82,17 +82,19 @@ export default function Home() {
 		setTimeout(function() {
 			//send results
 			const URLsend = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/votes/vote';
-			console.log(localStorage.getItem('alreadyVoted'), (new Date().getTime() - localStorage.getItem('dateVoted') < 43200000))
 			axios.post(URLsend, {
 				vote: parseInt(voteState.vote),
 				class: parseInt(id.charAt(6).toString()),
 				// Check localstorage to prevent re-voting
-				alreadyVoted: localStorage.getItem('alreadyVoted') && (new Date().getTime() - localStorage.getItem('dateVoted') < 43200000)
+				alreadyVoted: localStorage.getItem('alreadyVoted') && (new Date().getTime() - localStorage.getItem('dateVoted') < 43200000),
+				user_token: localStorage.getItem('user_token') != null ? localStorage.getItem('user_token') : null
 			}
 			).then(async (res) => {
 				// Set localstorage to prevent re-voting
 				localStorage.setItem('alreadyVoted', true);
 				localStorage.setItem('dateVoted', new Date().getTime());
+				// set user token
+				localStorage.setItem('user_token', res.data.user_token);
 
 				setVoteState({
 					vote: voteState.vote,
