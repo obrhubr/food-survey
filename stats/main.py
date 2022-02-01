@@ -31,7 +31,9 @@ def run():
     # get name of menu
     logging.info(datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' info: Querying menus to get the name of the menu.')
     conn.collection('menus').document(iso_date).update({"open": False})
-    menu_name = conn.collection('menus').document(iso_date).get().to_dict()['name']
+    menu = conn.collection('menus').document(iso_date).get().to_dict()
+    menu_vegetarien = menu['name']
+    menu_name = menu['vegetarian']
 
     # compute weights for votes
     wdf = st.get_weights(df)
@@ -52,6 +54,7 @@ def run():
     doc = conn.collection('stats').document(iso_date)
     doc.set({
         'day': iso_date,
+        'vegetarian': menu_vegetarian
         'name': menu_name,
         'jsondata': json.dumps(json_data, cls=NpEncoder)
     })
