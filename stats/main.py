@@ -54,7 +54,7 @@ def run():
     doc = conn.collection('stats').document(iso_date)
     doc.set({
         'day': iso_date,
-        'vegetarian': menu_vegetarian
+        'vegetarian': menu_vegetarian,
         'name': menu_name,
         'jsondata': json.dumps(json_data, cls=NpEncoder)
     })
