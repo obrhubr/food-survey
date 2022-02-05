@@ -135,58 +135,72 @@ async function vote_add(connection, iso_date, vote, menu, student_class, ip, use
 }
 
 async function get_results_all_class(connection, day) {
-    var get_all_votes_res = 0;
-    var get_average_res = 0;
+    // get menus
+    var m = await connection.collection('menus').doc(day).get();
+    var me = JSON.parse(m.data().menus);
+    var menus = me.menus.map(e => { return e.name });
 
-    const ref = connection.collection('votes');
-    const snapshot = await ref.where('day', '==', day).get();
-    snapshot.forEach((doc) => {
-        var data = doc.data();
-
-        get_all_votes_res++;
-        get_average_res += data.vote;
-    });
-    
     var values = [];
     for(var cl = 1; cl < 9; cl++) {
         values.push(cl);
     }
 
-    const total = get_all_votes_res;
-    const average = get_average_res / (total != 0 ? total : 1);
-
-    var class_avg = [];
-    var class_total = [];
-    for(var i = 0; i < 8; i++) {
-        var res_total = 0;
-        var res_avg = 0;
-
-        const snapshot = await ref.where('day', '==', day).where('class', '==', values[i]).get();
+    // get total
+    var menus_results = {results_all: [], results_class: {}};
+    for(var i = 0; i < menus.length; i++) {
+        var get_all_votes_res = 0;
+        var get_average_res = 0;
+    
+        const ref = connection.collection('votes');
+        const snapshot = await ref.where('day', '==', day).where('menu', '==', menus[i]).get();
         snapshot.forEach((doc) => {
             var data = doc.data();
-
-            res_total++;
-            res_avg += data.vote;
+    
+            get_all_votes_res++;
+            get_average_res += data.vote;
         });
+    
+        const total = get_all_votes_res;
+        const average = get_average_res / (total != 0 ? total : 1);
 
-        class_total.push(res_total);
-        class_avg.push(res_avg / (res_total != 0 ? res_total : 1));
+        menus_results.results_all.push({name: menus[i], total, average});
     }
 
-    return {
-        total,
-        average,
-        class_total,
-        class_avg
-    };
+    // get for each class
+    for(var i = 0; i < menus.length; i++) {
+        menus_results.results_class[menus[i]] = [];
+
+        var class_avg = [];
+        var class_total = [];
+        for(var j = 0; j < 8; j++) {
+            var res_total = 0;
+            var res_avg = 0;
+
+            const ref = connection.collection('votes');
+            const snapshot = await ref.where('day', '==', day).where('menu', '==', menus[i]).where('class', '==', values[j]).get();
+            snapshot.forEach((doc) => {
+                var data = doc.data();
+
+                res_total++;
+                res_avg += data.vote;
+            });
+
+            class_total.push(res_total);
+            class_avg.push(res_avg / (res_total != 0 ? res_total : 1));
+        }
+            
+        menus_results.results_class[menus[i]].push({class_total, class_avg});
+    }
+
+    return menus_results;
 }
 
-async function get_results_class(connection, student_class, day) {
+async function get_results_class(connection, student_class, day, menu) {
     var get_class_votes_res = 0;
     var get_average_class_res = 0;
 
     const ref = connection.collection('votes');
-    const snapshot = await ref.where('day', '==', day).where('class', '==', student_class).get();
+    const snapshot = await ref.where('day', '==', day).where('menu', '==', menu).where('class', '==', student_class).get();
     snapshot.forEach(doc => {
         var data = doc.data();
 
@@ -203,12 +217,12 @@ async function get_results_class(connection, student_class, day) {
     };
 }
 
-async function get_results_no_class(connection, day) {
+async function get_results_no_class(connection, day, menu) {
     var get_all_votes_res = 0;
     var get_average_res = 0;
 
     const ref = connection.collection('votes');
-    const snapshot = await ref.where('day', '==', day).get();
+    const snapshot = await ref.where('day', '==', day).where('menu', '==', menu).get();
     snapshot.forEach((doc) => {
         var data = doc.data();
 

@@ -27,7 +27,7 @@ if(process.env.DB == "pgsql") {
 // Get Results for user
 router.post('/current', async (req, res) => {
     // Check if request is well-formed
-    if(req.body.class == null || typeof req.body.class != "number") {
+    if(req.body.class == null || typeof req.body.class != "number" || req.body.menu == null || typeof req.body.menu != "string") {
         logger.log('info', `[${res.locals.trace_id}] ROUTE: /results/current - Not all fields filled out `);
         res.status(500).send({'error': 'Please try again later.'});
         return;
@@ -52,7 +52,7 @@ router.post('/current', async (req, res) => {
             dbres.total = no_class_results.total;
             dbres.average = no_class_results.average;
         } else {
-            var t1 = await db.get_results_no_class(connection, iso_date);
+            var t1 = await db.get_results_no_class(connection, iso_date, req.body.menu);
             dbres.total = t1.total;
             dbres.average = t1.average;
             cache.put('results_no_class', {total: t1.total, average: t1.average}, 60000);
@@ -86,7 +86,7 @@ router.post('/today', authenticate, async (req, res) => {
 
     try {
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /results/today - Querying database: to get statistics `);
-        const dbres = await db.get_results_all_class(connection, iso_date);
+        const dbres = await db.get_results_all_class(connection, iso_date, req.body.menu);
         res.status(200).json(dbres);
         return;
     } catch (err) {
@@ -109,7 +109,7 @@ router.post('/day', authenticate, async (req, res) => {
 
     try {
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /results/day - Querying database: to get statistics `);
-        const dbres = await db.get_results_all_class(connection, req.body.day);
+        const dbres = await db.get_results_all_class(connection, req.body.day, req.body.menu);
         res.status(200).json(dbres);
         return;
     } catch (err) {
