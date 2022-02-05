@@ -3,6 +3,7 @@ import axios from 'axios';
 import Results from '../components/Results';
 import VoteClass from '../components/VoteClass';
 import VoteScore from '../components/VoteScore';
+import VoteMenu from '../components/VoteMenu';
 import Error from '../components/Error';
 import Image from 'next/image';
 
@@ -12,15 +13,15 @@ export default function Home() {
 
 	const [voteState, setVoteState] = useState({
         vote: undefined,
-		class: undefined
+		class: undefined,
+		menu: undefined
     });
 
 	const [menuState, setMenuState] = useState({
-        name: undefined,
-        day: undefined,
-        vegetarian: undefined,
-        open: undefined
-    });
+		menus: [],
+		day: undefined,
+		open: false
+	});
 
 	const [resultState, setResultState] = useState({
         globalAvg: undefined,
@@ -69,7 +70,21 @@ export default function Home() {
 		setTimeout(function() {
 			setVoteState({
 				vote: id.charAt(5).toString(),
-				class: voteState.class
+				class: voteState.class,
+				menu: voteState.menu
+			})
+		}, delayInMilliseconds);
+	};
+
+	function setMenu(e) {
+		var t = e.target;
+		// delay to not confuse user
+		var delayInMilliseconds = 100;
+		setTimeout(function() {
+			setVoteState({
+				vote: voteState.vote,
+				class: voteState.class,
+				menu: t.textContent
 			})
 		}, delayInMilliseconds);
 	};
@@ -85,6 +100,7 @@ export default function Home() {
 			axios.post(URLsend, {
 				vote: parseInt(voteState.vote),
 				class: parseInt(id.charAt(6).toString()),
+				menu: voteState.menu,
 				// Check localstorage to prevent re-voting
 				alreadyVoted: localStorage.getItem('alreadyVoted') && (new Date().getTime() - localStorage.getItem('dateVoted') < 43200000),
 				user_token: localStorage.getItem('user_token') != null ? localStorage.getItem('user_token') : null
@@ -98,7 +114,8 @@ export default function Home() {
 
 				setVoteState({
 					vote: voteState.vote,
-					class: id.charAt(6).toString()
+					class: id.charAt(6).toString(),
+					menu: voteState.menu
 				});
 			})
 			.catch(error => {
@@ -137,14 +154,22 @@ export default function Home() {
 					:
 						<>
 							{resultState.globalAvg == undefined ?
-								voteState.vote == undefined ?
-										<>
-											<VoteScore menu={menuState} setVote={setVote}/>
-										</>
+								voteState.menu == null ?
+										menuState.menus.menus == null ?
+											<></>
+										:
+											<>
+												<VoteMenu menus={menuState.menus.menus} setMenu={setMenu}/>
+											</>
 									:
-										<>
-											<VoteClass setClass={setClass}/>
-										</>
+										voteState.vote == undefined ?
+											<>
+												<VoteScore menu={voteState.menu} setVote={setVote}/>
+											</>
+										:
+											<>
+												<VoteClass setClass={setClass}/>
+											</>
 							:
 								<>
 									<Results results={resultState} votes={voteState}/>

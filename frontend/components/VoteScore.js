@@ -9,7 +9,7 @@ export default function VoteScore(props) {
                 </div>
 
                 <div className='text-xl my-10 text-center bg-gray-200 rounded-lg p-5 shadow-md'>
-                    {props.menu.name}
+                    {props.menu}
                 </div>
 
                 <div className='text-lg text-white my-5 mx-20 text-center'>
