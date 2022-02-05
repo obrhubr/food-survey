@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import axios from 'axios';
 import Error from '../components/Error';
+import MenuDialog from '../components/MenuDialog';
 import { useRouter } from 'next/router';
 
 export default function Menu() {
     const router = useRouter();
 
-    const [menuName, setMenuName] = useState("");
-    const [vegetarian, setVegetarian] = useState(false);
+    const [menusState, setMenusState] = useState([]);
     const [saveState, setSaveState] = useState(false);
 
     const [status, setStatus] = useState(false);
@@ -22,12 +22,10 @@ export default function Menu() {
 		votedClass: undefined
     });
 
-	function changeMenuName(event) {
-		setMenuName(event.target.value);
-	}
-	function changeVegetarian(event) {
-		setVegetarian(event.target.checked);
-	}
+    function changeMenus(menus) {
+        console.log("global change menus: ", menus)
+        setMenusState(menus);
+    }
 
     function statAnalysisManual () {
         setSaveState(true);
@@ -75,7 +73,7 @@ export default function Menu() {
         if(created) {
             // update
             const URL = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/menu/edit';
-            axios.post(URL, {name: menuName, vegetarian, token: document.cookie.substring(6, document.cookie.length)}).then(async (res) => {
+            axios.post(URL, {menus: {menus: menusState.filter(e => {return e.name != ""})}, token: document.cookie.substring(6, document.cookie.length)}).then(async (res) => {
                 setTimeout(function(){
                     setSaveState(false);
                 }, 700);
@@ -93,7 +91,7 @@ export default function Menu() {
         } else {
             // create
             const URL = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/menu/add';
-            axios.post(URL, {name: menuName, vegetarian, token: document.cookie.substring(6, document.cookie.length)}).then(async (res) => {
+            axios.post(URL, {menus: {menus: menusState.filter(e => {return e.name != null})}, token: document.cookie.substring(6, document.cookie.length)}).then(async (res) => {
                 setTimeout(function(){
                     setSaveState(false);
                 }, 700);
@@ -141,8 +139,7 @@ export default function Menu() {
 
         const URL = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/menu/today';
         axios.get(URL).then(async (res) => {
-            setMenuName(res.data.name);
-            setVegetarian(res.data.vegetarian);
+            setMenusState(res.data.menus.menus)
             setStatus(res.data.open);
             setCreated(res.data.exists);
         })
@@ -229,13 +226,8 @@ export default function Menu() {
                     Create, change or delete menu
                 </div>
                 <div className='m-4 flex flex-col justify-center items-center w-full'>
-                    <div className='m-4 flex flex-col'>
-                        <div className='flex flex-col items-center justify-center m-4'>
-                            <input className='my-2 w-64 appearance-none relative block px-3 py-1 mx-4 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm' type="text" placeholder='Lasagne Végétarienne...' value={menuName} onChange={changeMenuName}/>
-                            <label className="my-2 inline-flex items-center text-center px-3 py-1 mx-4 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md ">
-                                <input type="checkbox" className="form-checkbox h-5 w-5 text-green-600" checked={vegetarian} onChange={changeVegetarian}/><span className="ml-2 text-gray-700">Vegetarian</span>
-                            </label>
-                        </div>
+                    <div className='m-4 flex flex-col w-1/2'>  
+                        <MenuDialog changeMenus={changeMenus} menus={menusState} />
                         <div className='flex flex-row items-center justify-center m-4'>
                             <div onClick={updateMenu} className='mx-4 cursor-pointer p-2 px-5 rounded-md text-white bg-green-600 hover:bg-green-700'>
                                 Update
