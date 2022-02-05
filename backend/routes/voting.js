@@ -42,7 +42,7 @@ router.post('/vote', async (req, res) => {
         return;
     }
 
-    if(req.body.vote == null || req.body.class == null || typeof req.body.vote != "number" || typeof req.body.class != "number") {
+    if(req.body.vote == null || req.body.menu || req.body.class == null || typeof req.body.vote != "number" || typeof req.body.vote != "string" || typeof req.body.class != "number") {
         logger.log('info', `[${res.locals.trace_id}] ROUTE: /votes/vote - Not all fields filled out. `);
         res.status(500).send({'error': 'Error while processing your vote, try again.'});
         return;
@@ -69,6 +69,7 @@ router.post('/vote', async (req, res) => {
         // data
         var data = {
             vote: req.body.vote,
+            menu: req.body.menu,
             class: req.body.class
         }
 
@@ -81,7 +82,7 @@ router.post('/vote', async (req, res) => {
         }
 
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /votes/vote - Querying database`);
-        const dbres = await db.vote_add(connection, iso_date, req.body.vote, req.body.class, req.header('X-Forwarded-For'), req.body.user_token);
+        const dbres = await db.vote_add(connection, iso_date, req.body.vote, req.body.menu, req.body.class, req.header('X-Forwarded-For'), req.body.user_token);
 
         // Set cookie to voted
         res.json(data);

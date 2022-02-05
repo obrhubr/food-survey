@@ -25,7 +25,7 @@ if(process.env.DB == "pgsql") {
 // Add menu for today
 router.post('/add', authenticate, async (req, res) => {
     // Check if request is well-formed
-    if(req.body.name == null || req.body.vegetarian == null || typeof req.body.name != "string" || typeof req.body.vegetarian != "boolean") {
+    if(req.body.menus == null || typeof req.body.menus != "object" || typeof req.body.vegetarian != "boolean") {
         logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/add - Not all fields filled out `);
         res.status(500).send({'error': 'Please fill out all the fields to create menu.'});
         return;
@@ -45,7 +45,7 @@ router.post('/add', authenticate, async (req, res) => {
 
     try {
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/add - Querying database`);
-        const dbres = await db.add_menu(connection, iso_date, req.body.name, req.body.vegetarian);
+        const dbres = await db.add_menu(connection, iso_date, req.body.menus);
 
         res.json(dbres);
         return;

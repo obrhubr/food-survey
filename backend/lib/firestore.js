@@ -59,13 +59,12 @@ async function count_menu(connection, iso_date) {
 }
 
 // Create Menu
-async function add_menu(connection, iso_date, name, vegetarian) {
+async function add_menu(connection, iso_date, menus) {
     const docRef = await connection.collection('menus').doc(iso_date);
 
     var data = {
         day: iso_date,
-        name: name,
-        vegetarian: vegetarian,
+        menus: menus,
         open: false,
         createdAt: new Date().toISOString()
     };
@@ -78,11 +77,10 @@ async function today_menu(connection, iso_date) {
     return await connection.collection('menus').doc(iso_date).get();
 }
 
-async function update_menu(connection, iso_date, name, vegetarian, old_menu_status) {
+async function update_menu(connection, iso_date, menus, old_menu_status) {
     var data = {
         day: iso_date,
-        name: name,
-        vegetarian: vegetarian,
+        menus: menus,
         open: old_menu_status,
         createdAt: new Date().toISOString()
     };
@@ -115,12 +113,13 @@ async function get_today_menu(connection, iso_date) {
     return {l, data: doc.data()};
 }
 
-async function vote_add(connection, iso_date, vote, student_class, ip, user_token) {
+async function vote_add(connection, iso_date, vote, menu, student_class, ip, user_token) {
     const docRef = await connection.collection('votes').doc(v4());
 
     var data = {
         day: iso_date,
         vote: vote,
+        menu: menu,
         class: student_class,
         createdAt: new Date().toISOString()
     };
