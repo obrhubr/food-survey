@@ -64,7 +64,7 @@ async function add_menu(connection, iso_date, menus) {
 
     var data = {
         day: iso_date,
-        menus: menus,
+        menus: JSON.stringify(menus),
         open: false,
         createdAt: new Date().toISOString()
     };
@@ -80,7 +80,7 @@ async function today_menu(connection, iso_date) {
 async function update_menu(connection, iso_date, menus, old_menu_status) {
     var data = {
         day: iso_date,
-        menus: menus,
+        menus: JSON.stringify(menus),
         open: old_menu_status,
         createdAt: new Date().toISOString()
     };

@@ -42,7 +42,7 @@ router.post('/vote', async (req, res) => {
         return;
     }
 
-    if(req.body.vote == null || req.body.menu || req.body.class == null || typeof req.body.vote != "number" || typeof req.body.vote != "string" || typeof req.body.class != "number") {
+    if(req.body.vote == null || req.body.menu == null || req.body.class == null || typeof req.body.vote != "number" || typeof req.body.menu != "string" || typeof req.body.class != "number") {
         logger.log('info', `[${res.locals.trace_id}] ROUTE: /votes/vote - Not all fields filled out. `);
         res.status(500).send({'error': 'Error while processing your vote, try again.'});
         return;
@@ -117,6 +117,7 @@ router.get('/status', async (req, res) => {
 
     // Get today's date
     const iso_date = iso();
+    console.log(iso_date)
 
     // Check if voting already opened
     logger.log('debug', `[${res.locals.trace_id}] ROUTE: /votes/status - Querying database`);

@@ -61,7 +61,7 @@ router.post('/add', authenticate, async (req, res) => {
 // Edit today's menu
 router.post('/edit', authenticate, async (req, res) => {
     // Check if request is well-formed
-    if(req.body.name == null || req.body.vegetarian == null || typeof req.body.name != "string" || typeof req.body.vegetarian != "boolean") {
+    if(req.body.menu == null || typeof req.body.menu != "object") {
         logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/edit - Not all fields filled out `);
         res.status(500).send({'error': 'Please fill out all the fields to edit menu.'});
         return;
@@ -79,7 +79,7 @@ router.post('/edit', authenticate, async (req, res) => {
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/edit - Querying database`);
 
         // Update menu
-        const dbres = await db.update_menu(connection, iso_date, iso_date, req.body.name, req.body.vegetarian, old_menu_status);
+        const dbres = await db.update_menu(connection, iso_date, iso_date, req.body.menus, old_menu_status);
 
         res.json(dbres);
     } catch (err) {
@@ -109,7 +109,7 @@ router.post('/remove', authenticate, async (req, res) => {
     };
 });
 
-// Get status of today's menu
+// Get today's menu
 router.get('/today', async (req, res) => {
     // Get today's date
     const iso_date = iso();
@@ -120,17 +120,15 @@ router.get('/today', async (req, res) => {
 
         if(dbres.l < 1) {
             res.json({
-                name: "",
+                menus: {"menus": []},
                 day: iso_date,
-                vegetarian: false,
                 open: false,
                 exists: false
             });
         } else {
             res.json({
-                name: dbres.data.name,
                 day: dbres.data.day,
-                vegetarian: dbres.data.vegetarian,
+                menus: JSON.parse(dbres.data.menus),
                 open: dbres.data.open,
                 exists: true
             });
