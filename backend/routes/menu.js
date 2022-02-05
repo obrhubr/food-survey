@@ -61,7 +61,7 @@ router.post('/add', authenticate, async (req, res) => {
 // Edit today's menu
 router.post('/edit', authenticate, async (req, res) => {
     // Check if request is well-formed
-    if(req.body.menu == null || typeof req.body.menu != "object") {
+    if(req.body.menus == null || typeof req.body.menus != "object") {
         logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/edit - Not all fields filled out `);
         res.status(500).send({'error': 'Please fill out all the fields to edit menu.'});
         return;
@@ -73,15 +73,19 @@ router.post('/edit', authenticate, async (req, res) => {
     try {
         // Get old menu
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/edit - Querying database for old menu`);
-        const old_menu_status = db.today_menu(connection, iso_date);
+        const old_menu_status = await db.today_menu(connection, iso_date);
         if(!old_menu_status.exists) throw 'No menu exists';
 
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/edit - Querying database`);
 
         // Update menu
-        const dbres = await db.update_menu(connection, iso_date, iso_date, req.body.menus, old_menu_status);
+        const dbres = await db.update_menu(connection, iso_date, req.body.menus, old_menu_status.data().open);
 
-        res.json(dbres);
+        res.json({
+            day: dbres.day,
+            menus: JSON.parse(dbres.menus),
+            open: dbres.open
+        });
     } catch (err) {
         logger.log('error', `[${res.locals.trace_id}] ROUTE: /menu/edit - Error while editing menu in database. `);
         logger.log('debug', `[${res.locals.trace_id}] ${err}`);
