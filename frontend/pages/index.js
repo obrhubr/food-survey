@@ -130,7 +130,7 @@ export default function Home() {
 
 			// Fetch results
 			const URLResults = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/results/current';
-			axios.post(URLResults, {class: parseInt(id.charAt(6).toString())}).then(async (res) => {
+			axios.post(URLResults, {class: parseInt(id.charAt(6).toString()), menu: voteState.menu}).then(async (res) => {
 				setResultState({ globalAvg: res.data.average, classAvg: res.data.average_class, votedGlobal: res.data.total, votedClass: res.data.class_total });
 			})
 			.catch(error => {
@@ -190,7 +190,7 @@ export default function Home() {
 								<div className='my-5'>Votez pour vos menus de cantine favoris!</div>
 							</div>
 
-							<div className='p-1'>
+							<div className='p-1 flex justify-center items-center'>
 								<button type="button" className="inline-flex items-center px-4 py-2 font-semibold leading-6 text-lg shadow rounded-md text-white bg-blue-500 hover:bg-blue-400 transition ease-in-out duration-150 cursor-not-allowed" disabled="">
 									<svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
 										<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
