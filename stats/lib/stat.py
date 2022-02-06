@@ -133,3 +133,17 @@ def weighted_get_best_median(wdf):
 def weighted_get_best_avg(wdf):
     total = wdf.groupby('day').apply(lambda x: np.average(x.score, weights=x.weight))
     return {"total": total.iloc[0]}
+
+def get_stats_report(df, wdf):
+    json_data = {
+        "nw_most_positive": not_weighted_get_most_positive_ranking(df),
+        "nw_least_negative": not_weighted_get_least_negative_ranking(df),
+        "nw_median": not_weighted_get_best_median(df),
+        "nw_avg": not_weighted_get_best_avg(df),
+
+        "w_most_positive": weighted_get_most_positive_ranking(wdf),
+        "w_least_negative": weighted_get_least_negative_ranking(wdf),
+        "w_median": weighted_get_best_median(wdf),
+        "w_avg": weighted_get_best_avg(wdf)
+    }
+    return json_data

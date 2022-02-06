@@ -7,6 +7,8 @@ import numpy as np
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 import os
+import pandas as pd
+import copy
 
 class NpEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -21,43 +23,44 @@ class NpEncoder(json.JSONEncoder):
 def run():
     # create connection
     conn = fe.create_connection()
-    iso_date = datetime.now().date().strftime('%Y-%m-%d')
+    iso_date = datetime.now().date().strftime('%Y-%m-%-d')
+
+    # get name of menu
+    logging.info(datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' info: Querying menus to get the name of the menu.')
+    conn.collection('menus').document(iso_date).update({"open": False})
+    menu = conn.collection('menus').document(iso_date).get().to_dict()
+    menu_names = json.loads(menu['menus'])['menus']
+
+    # Get stats for each menu
 
     df, exists = fe.get_votes_as_df(conn, iso_date)
     if not exists:
         logging.error(datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' error: No records in database.')
         return jsonify({"error": "No data to analyse"})
 
-    # get name of menu
-    logging.info(datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' info: Querying menus to get the name of the menu.')
-    conn.collection('menus').document(iso_date).update({"open": False})
-    menu = conn.collection('menus').document(iso_date).get().to_dict()
-    menu_vegetarien = menu['name']
-    menu_name = menu['vegetarian']
-
     # compute weights for votes
     wdf = st.get_weights(df)
 
-    json_data = {
-        "nw_most_positive": st.not_weighted_get_most_positive_ranking(df),
-        "nw_least_negative": st.not_weighted_get_least_negative_ranking(df),
-        "nw_median": st.not_weighted_get_best_median(df),
-        "nw_avg": st.not_weighted_get_best_avg(df),
+    # sort by menus
+    df.sort_values(by='menu', inplace=True)
+    df.set_index(keys=['menu'], drop=False, inplace=True)
+    wdf.sort_values(by='menu', inplace=True)
+    wdf.set_index(keys=['menu'], drop=False, inplace=True)
 
-        "w_most_positive": st.weighted_get_most_positive_ranking(wdf),
-        "w_least_negative": st.weighted_get_least_negative_ranking(wdf),
-        "w_median": st.weighted_get_best_median(wdf),
-        "w_avg": st.weighted_get_best_avg(wdf)
-    }
+    for m in menu_names:
+        filtered_df = copy.deepcopy(df.loc[df.menu == m['name']])
+        filtered_wdf = copy.deepcopy(wdf.loc[wdf.menu == m['name']])
+        stats = st.get_stats_report(filtered_df, filtered_wdf)
 
-    logging.info(datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' info: Querying database to save statistics.')
-    doc = conn.collection('stats').document(iso_date)
-    doc.set({
-        'day': iso_date,
-        'vegetarian': menu_vegetarian,
-        'name': menu_name,
-        'jsondata': json.dumps(json_data, cls=NpEncoder)
-    })
+        logging.info(datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' info: Querying database to save statistics.')
+        doc = conn.collection('stats').document(iso_date + '-' + m['name'])
+        doc.set({
+            'day': iso_date,
+            'name': m["name"],
+            'jsondata': json.dumps(stats, cls=NpEncoder)
+        })
+
+
     return jsonify({"success": "Created stats."})
 
 app = Flask(__name__)
