@@ -29,15 +29,13 @@ export default function MenuDialog(props) {
             <div className='m-4 w-full'>
                 {menus.map((e, i) => {
                     return (
-                        <>
-                            <div key={i} id={i} className=''>
-                                <MenuInput index={i} changeMenu={changeMenu} name={e.name} vegetarian={e.vegetarian} />
-                            </div>
-                        </>
+                        <div key={i} id={i} className=''>
+                            <MenuInput key={i} index={i} changeMenu={changeMenu} name={e.name} vegetarian={e.vegetarian} />
+                        </div>
                     )
                 })}
                 <div className='text-center text-red-400'>
-                    (Menus with an empty name won't be saved!)
+                    (Menus with an empty name won&apos;t be saved!)
                 </div>
             </div>
             <div onClick={addMenu} className='w-1/4 flex flex-row items-center justify-center m-4 cursor-pointer p-2 px-5 rounded-md text-black bg-gray-200 hover:bg-gray-300'>
