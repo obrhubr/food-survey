@@ -17,6 +17,7 @@ export default function Daystats() {
         results_all: undefined,
         results_class: undefined
     });
+    const [resultsLoaded, setResultsLoaded] = useState(false);
 
     function handleMenuChange(e) {
         setMenuName(e.target.value);
@@ -35,9 +36,14 @@ export default function Daystats() {
         // Fetch results
         const URLResults = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/results/day';
         axios.post(URLResults, {token: document.cookie.substring(6, document.cookie.length), day}).then(async (res) => {
+            if(res.data.error != null) {
+                setResultsLoaded(false);
+                return;
+            }
             setResults({ results_all: res.data.results_all, results_class: res.data.results_class });
             setMenuNames(res.data.results_all.map(e => { return e.name }));
             setMenuName(res.data.results_all[0].name);
+            setResultsLoaded(true);
         })
         .catch(error => {
             try {
@@ -60,7 +66,11 @@ export default function Daystats() {
                 </>
             }
                 <div className='w-full flex flex-col justify-center items-center'>
-                    <Stats menuNames={menuNames} results={results} menuName={menuName} handleMenuChange={handleMenuChange}/>
+                    {resultsLoaded ?
+                        <Stats menuNames={menuNames} results={results} menuName={menuName} handleMenuChange={handleMenuChange} />
+                    :
+                        <></>
+                    }
                 </div>
         </>
     )

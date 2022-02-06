@@ -23,6 +23,7 @@ export default function Menu() {
         results_all: undefined,
 		results_class: undefined
     });
+    const [resultsLoaded, setResultsLoaded] = useState(false);
 
     function changeMenus(menus) {
         console.log("global change menus: ", menus)
@@ -162,9 +163,14 @@ export default function Menu() {
         // Fetch results
         const URLResults = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/results/today';
         axios.post(URLResults, {token: document.cookie.substring(6, document.cookie.length)}).then(async (res) => {
+            if(res.data.error != null) {
+                setResultsLoaded(false);
+                return;
+            }
             setResults({ results_all: res.data.results_all, results_class: res.data.results_class });
             setMenuNames(res.data.results_all.map(e => { return e.name }));
             setMenuName(res.data.results_all[0].name);
+            setResultsLoaded(true);
         })
         .catch(error => {
             try {
@@ -242,7 +248,11 @@ export default function Menu() {
                 </div>
                 <div className='bg-green-200 bg-red-200'></div>
                 <div className='flex flex-col justify-center items-center'>
-                    <Stats menuNames={menuNames} results={results} menuName={menuName} handleMenuChange={handleMenuChange} />
+                    {resultsLoaded ?
+                        <Stats menuNames={menuNames} results={results} menuName={menuName} handleMenuChange={handleMenuChange} />
+                    :
+                        <></>
+                    }
                 </div>
             </div>
         </>
