@@ -62,7 +62,7 @@ router.post('/current', async (req, res) => {
             dbres.class_total = class_results.class_total;
             dbres.average_class = class_results.average_class;
         } else {
-            var t2 = await db.get_results_class(connection, req.body.class, iso_date);
+            var t2 = await db.get_results_class(connection, req.body.class, iso_date, req.body.menu);
             dbres.class_total = t2.class_total;
             dbres.average_class = t2.average_class;
             cache.put('results_class_' + req.body.class, {class_total: t2.class_total, average_class: t2.average_class}, 60000);
@@ -86,7 +86,7 @@ router.post('/today', authenticate, async (req, res) => {
 
     try {
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /results/today - Querying database: to get statistics `);
-        const dbres = await db.get_results_all_class(connection, iso_date, req.body.menu);
+        const dbres = await db.get_results_all_class(connection, iso_date);
         res.status(200).json(dbres);
         return;
     } catch (err) {

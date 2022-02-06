@@ -137,6 +137,10 @@ async function vote_add(connection, iso_date, vote, menu, student_class, ip, use
 async function get_results_all_class(connection, day) {
     // get menus
     var m = await connection.collection('menus').doc(day).get();
+    if(!m.exists) {
+        return {"error": "No data for this day."};
+    }
+
     var me = JSON.parse(m.data().menus);
     var menus = me.menus.map(e => { return e.name });
 
