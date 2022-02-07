@@ -47,9 +47,15 @@ def run():
     wdf.sort_values(by='menu', inplace=True)
     wdf.set_index(keys=['menu'], drop=False, inplace=True)
 
+    print(wdf)
+
     for m in menu_names:
         filtered_df = copy.deepcopy(df.loc[df.menu == m['name']])
         filtered_wdf = copy.deepcopy(wdf.loc[wdf.menu == m['name']])
+
+        if(filtered_wdf.shape[0] < 1):
+            continue
+
         stats = st.get_stats_report(filtered_df, filtered_wdf)
 
         logging.info(datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ' info: Querying database to save statistics.')
