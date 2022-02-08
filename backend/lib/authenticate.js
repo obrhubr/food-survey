@@ -8,10 +8,14 @@ function authenticate(req, res, next) {
         return
     }
 
-    jwt.verify(token, process.env.SECRET, (err, user) => {
-        if (err) res.status(401).json({ 'error': "Not authenticated."});
-        next();
-        return;
+     jwt.verify(token, process.env.SECRET, (err, user) => {
+        if (err) {
+            res.status(401).json({ 'error': "Not authenticated."}) 
+            return;
+        } else {
+            next();
+            return;
+        };
     });
 }
 

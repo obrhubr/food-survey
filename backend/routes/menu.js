@@ -5,7 +5,7 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const { v4 } = require('uuid');
-const sanitizer = require('sanitize')();
+const sanitizer = require('sanitizer');
 
 // require logger
 const { logger } = require('../lib/logger');
@@ -26,32 +26,41 @@ if(process.env.DB == "pgsql") {
 
 // Add menu for today
 router.post('/add', authenticate, async (req, res) => {
-    // Check if request is well-formed
-    if(req.body.menus == null || typeof req.body.menus != "object") {
-        logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/add - Not all fields filled out `);
-        res.status(500).send({'error': 'Please fill out all the fields to create menu.'});
-        return;
-    }
-
     // Get today's date
     const iso_date = iso();
 
-    // Only one menu per day check
-    const menu_exists = await db.count_menu(connection, iso_date) == 0 ? false : true;
+    // Check if request is well-formed
+    try {
+        if(req.body.menus == null || typeof req.body.menus != "object") {
+            logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/add - Not all fields filled out `);
+            res.status(500).send({'error': 'Please fill out all the fields to create menu.'});
+            return;
+        }
+    
+        // Only one menu per day check
+        const menu_exists = await db.count_menu(connection, iso_date) == 0 ? false : true;
+    
+        if(menu_exists) {
+            logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/add - Menu already created `);
+            res.status(500).send({'error': 'Cannot create another menu today, either edit or delete the menu first.'});
+            return;
+        }
+    } catch (err) {
+        logger.log('error', `[${res.locals.trace_id}] ROUTE: /menu/add - Error while checking for validity. `);
+        logger.log('debug', `[${res.locals.trace_id}] ${err}`);
 
-    if(menu_exists) {
-        logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/add - Menu already created `);
-        res.status(500).send({'error': 'Cannot create another menu today, either edit or delete the menu first.'});
+        res.status(500).send({'error': 'Error while processing your request, try again later.'});
         return;
     }
 
     try {
-        logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/add - Querying database`);
         // sanitize menu to prevent xss type attacks
-        const sanitized_menus = req.body.menus.menus.map(e => {return { name: sanitizer.value(e.name, 'string'), vegetarian: e.vegetarian, uuid: v4() } });
+        const sanitized_menus = req.body.menus.menus.map(e => {return { name: sanitizer.sanitize(e.name), vegetarian: e.vegetarian, uuid: v4() } });
+
+        logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/add - Querying database`);
         const dbres = await db.add_menu(connection, iso_date, sanitized_menus);
 
-        res.json(dbres);
+        res.status(200).json(dbres);
         return;
     } catch (err) {
         logger.log('error', `[${res.locals.trace_id}] ROUTE: /menu/add - Error while saving to the database. `);
@@ -83,7 +92,7 @@ router.post('/edit', authenticate, async (req, res) => {
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/edit - Querying database`);
 
         // sanitize menu to prevent xss type attacks
-        const sanitized_menus = req.body.menus.menus.map(e => {return { name: sanitizer.value(e.name, 'string'), vegetarian: e.vegetarian, uuid: sanitizer.value(e.uuid, 'string') } });
+        const sanitized_menus = req.body.menus.menus.map(e => {return { name: sanitizer.sanitize(e.name), vegetarian: e.vegetarian, uuid: sanitizer.sanitize(e.uuid) } });
         // Update menu
         const dbres = await db.update_menu(connection, iso_date, sanitized_menus, old_menu_status.data().open);
 

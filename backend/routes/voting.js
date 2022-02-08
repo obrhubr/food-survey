@@ -6,7 +6,7 @@ const express = require('express');
 const router = express.Router(); 
 const cache = require('memory-cache');
 const { v4 } = require('uuid');
-const sanitizer = require('sanitize')();
+const sanitizer = require('sanitizer');
 
 // require logger
 const { logger } = require('../lib/logger');
@@ -72,7 +72,7 @@ router.post('/vote', async (req, res) => {
         return;
     }
 
-    const menu = sanitizer.value(req.body.menu, 'string');
+    const menu = sanitizer.sanitize(req.body.menu);
 
     try {
         // data
