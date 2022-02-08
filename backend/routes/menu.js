@@ -55,7 +55,7 @@ router.post('/add', authenticate, async (req, res) => {
 
     try {
         // sanitize menu to prevent xss type attacks
-        const sanitized_menus = req.body.menus.menus.map(e => {return { name: sanitizer.sanitize(e.name), vegetarian: e.vegetarian, uuid: v4() } });
+        const sanitized_menus = {menus: req.body.menus.menus.map(e => {return { name: sanitizer.sanitize(e.name), vegetarian: e.vegetarian, uuid: v4() } })};
 
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/add - Querying database`);
         const dbres = await db.add_menu(connection, iso_date, sanitized_menus);
@@ -92,7 +92,7 @@ router.post('/edit', authenticate, async (req, res) => {
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/edit - Querying database`);
 
         // sanitize menu to prevent xss type attacks
-        const sanitized_menus = req.body.menus.menus.map(e => {return { name: sanitizer.sanitize(e.name), vegetarian: e.vegetarian, uuid: sanitizer.sanitize(e.uuid) } });
+        const sanitized_menus = {menus: req.body.menus.menus.map(e => {return { name: sanitizer.sanitize(e.name), vegetarian: e.vegetarian, uuid: sanitizer.sanitize(e.uuid) } })};
         // Update menu
         const dbres = await db.update_menu(connection, iso_date, sanitized_menus, old_menu_status.data().open);
 
