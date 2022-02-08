@@ -48,6 +48,12 @@ router.post('/vote', async (req, res) => {
         return;
     }
 
+    if(req.body.vote < 0 || req.body.vote > 5 || req.body.class < 0 || req.body.class > 8) {
+        logger.log('info', `[${res.locals.trace_id}] ROUTE: /votes/vote - Invalid values for vote or class. `);
+        res.status(500).send({'error': 'Please don\'t use the api to vote directly :).'});
+        return;
+    }
+
     // Get today's date
     const iso_date = iso();
 
