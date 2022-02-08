@@ -77,14 +77,15 @@ export default function Home() {
 	};
 
 	function setMenu(e) {
-		var uuid = e.target.id;
+		var t = e.target;
 		// delay to not confuse user
 		var delayInMilliseconds = 100;
 		setTimeout(function() {
 			setVoteState({
 				vote: voteState.vote,
 				class: voteState.class,
-				menu: uuid
+				name: t.textContent,
+				menu: t.id
 			})
 		}, delayInMilliseconds);
 	};
@@ -164,7 +165,7 @@ export default function Home() {
 									:
 										voteState.vote == undefined ?
 											<>
-												<VoteScore menu={voteState.menu} setVote={setVote}/>
+												<VoteScore menu={voteState.name} setVote={setVote}/>
 											</>
 										:
 											<>
