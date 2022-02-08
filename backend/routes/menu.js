@@ -4,6 +4,7 @@ require('dotenv').config();
 // Require dependencies
 const express = require('express');
 const router = express.Router();
+const { v4 } = require('uuid');
 
 // require logger
 const { logger } = require('../lib/logger');
@@ -46,7 +47,7 @@ router.post('/add', authenticate, async (req, res) => {
     try {
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/add - Querying database`);
         // sanitize menu to prevent xss type attacks
-        const sanitized_menus = req.body.menus.menus.map(e => {return { name: sanitizer.value(e.name, 'string'), vegetarian: e.vegetarian, uuid: sanitizer.value(e.uuid, 'string') } });
+        const sanitized_menus = req.body.menus.menus.map(e => {return { name: sanitizer.value(e.name, 'string'), vegetarian: e.vegetarian, uuid: v4() } });
         const dbres = await db.add_menu(connection, iso_date, sanitized_menus);
 
         res.json(dbres);
@@ -138,7 +139,7 @@ router.get('/today', async (req, res) => {
                 day: dbres.data.day,
                 menus: JSON.parse(dbres.data.menus),
                 open: dbres.data.open,
-                exists: true
+                exists: true,
             });
             return;
         }

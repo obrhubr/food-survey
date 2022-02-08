@@ -77,14 +77,14 @@ export default function Home() {
 	};
 
 	function setMenu(e) {
-		var t = e.target;
+		var uuid = e.target.id;
 		// delay to not confuse user
 		var delayInMilliseconds = 100;
 		setTimeout(function() {
 			setVoteState({
 				vote: voteState.vote,
 				class: voteState.class,
-				menu: t.textContent
+				menu: uuid
 			})
 		}, delayInMilliseconds);
 	};
