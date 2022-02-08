@@ -5,6 +5,7 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const { v4 } = require('uuid');
+const sanitizer = require('sanitize')();
 
 // require logger
 const { logger } = require('../lib/logger');
