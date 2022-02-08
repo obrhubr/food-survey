@@ -101,6 +101,7 @@ export default function Menu() {
             axios.post(URL, {menus: {menus: menusState.filter(e => {return e.name != null})}, token: document.cookie.substring(6, document.cookie.length)}).then(async (res) => {
                 setTimeout(function(){
                     setSaveState(false);
+                    setCreated(true);
                 }, 700);
             })
             .catch(error => {
