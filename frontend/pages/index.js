@@ -14,7 +14,8 @@ export default function Home() {
 	const [voteState, setVoteState] = useState({
         vote: undefined,
 		class: undefined,
-		menu: undefined
+		menu: undefined,
+		name: undefined
     });
 
 	const [menuState, setMenuState] = useState({
@@ -71,7 +72,8 @@ export default function Home() {
 			setVoteState({
 				vote: id.charAt(5).toString(),
 				class: voteState.class,
-				menu: voteState.menu
+				menu: voteState.menu,
+				name: voteState.name
 			})
 		}, delayInMilliseconds);
 	};
@@ -116,7 +118,8 @@ export default function Home() {
 				setVoteState({
 					vote: voteState.vote,
 					class: id.charAt(6).toString(),
-					menu: voteState.menu
+					menu: voteState.menu,
+					name: voteState.name
 				});
 			})
 			.catch(error => {

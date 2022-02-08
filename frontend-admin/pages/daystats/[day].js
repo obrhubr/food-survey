@@ -10,8 +10,10 @@ export default function Daystats() {
     const { day } = router.query;
 	const [errorState, setErrorState] = useState("");
 
-    const [menuName, setMenuName] = useState("");
-    const [menuNames, setMenuNames] = useState([]);
+	const [menuName, setMenuName] = useState("");
+	const [menuUuid, setMenuUuid] = useState("");
+	const [menuNames, setMenuNames] = useState([]);
+	const [menuUuids, setMenuUuids] = useState([]);
 
     const [results, setResults] = useState({
         results_all: undefined,
@@ -21,6 +23,7 @@ export default function Daystats() {
 
     function handleMenuChange(e) {
         setMenuName(e.target.value);
+        setMenuUuid(e.target.options[e.target.options.selectedIndex].id);
     }
 
     useEffect(() => {
@@ -42,7 +45,9 @@ export default function Daystats() {
             }
             setResults({ results_all: res.data.results_all, results_class: res.data.results_class });
             setMenuNames(res.data.results_all.map(e => { return e.name }));
+            setMenuUuids(res.data.results_all.map(e => { return e.uuid }));
             setMenuName(res.data.results_all[0].name);
+            setMenuUuid(res.data.results_all[0].uuid);
             setResultsLoaded(true);
         })
         .catch(error => {
@@ -67,7 +72,7 @@ export default function Daystats() {
             }
                 <div className='w-full flex flex-col justify-center items-center'>
                     {resultsLoaded ?
-                        <Stats menuNames={menuNames} results={results} menuName={menuName} handleMenuChange={handleMenuChange} />
+                        <Stats menuNames={menuNames} menuUuid={menuUuid} menuUuids={menuUuids} results={results} menuName={menuName} handleMenuChange={handleMenuChange} />
                     :
                         <></>
                     }

@@ -62,21 +62,20 @@ export default function Stats(props) {
                             <select value={props.menuName} onChange={props.handleMenuChange} className="form-select appearance-none block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" aria-label="Default select example">
                                 {props.menuNames.map((e, i) => {
                                     return (
-                                        <option key={i} value={e}>{e}</option>
+                                        <option key={i} id={props.menuUuids[i]} value={e}>{e}</option>
                                     )
                                 })}
                             </select>
                         </div>
                     </div>
-
                     <div className='flex flex-col justify-center items-center'>
                         {props.results.results_class != null && props.results.results_all.length > 0 && props.menuName != null && props.menuName != "" ?
-                            props.results.results_class[props.menuName][0].class_avg.map((item, i) => {
+                            props.results.results_class[props.menuUuid][0].class_avg.map((item, i) => {
                                 return (
                                     <div key={i}>
                                         <div key={i} className='w-full flex flex-row my-2 px-4 py-2'>
                                             <div className='text-left mx-2 px-2 w-full'>
-                                                Total for {getClassFromNumber(i+1)} ({props.results.results_class[props.menuName][0].class_total[i]} votes) for {props.menuName}: 
+                                                Total for {getClassFromNumber(i+1)} ({props.results.results_class[props.menuUuid][0].class_total[i]} votes) for {props.menuName}: 
                                             </div>
                                             <div className='flex flex-row w-full mx-4'>
                                                 <div className={'bg-red-' + matchingAvg(item, 1) + ' w-full rounded-l-lg py-4 px-10'}> </div>

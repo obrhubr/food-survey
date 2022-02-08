@@ -143,6 +143,7 @@ async function get_results_all_class(connection, day) {
 
     var me = JSON.parse(m.data().menus);
     var menus = me.menus.map(e => { return e.uuid });
+    var names = me.menus.map(e => { return e.name });
 
     var values = [];
     for(var cl = 1; cl < 9; cl++) {
@@ -167,7 +168,7 @@ async function get_results_all_class(connection, day) {
         const total = get_all_votes_res;
         const average = get_average_res / (total != 0 ? total : 1);
 
-        menus_results.results_all.push({name: menus[i], total, average});
+        menus_results.results_all.push({name: names[i], uuid: menus[i], total, average});
     }
 
     // get for each class
