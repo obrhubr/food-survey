@@ -114,7 +114,7 @@ async function get_today_menu(connection, iso_date) {
 }
 
 async function vote_add(connection, iso_date, vote, menu, student_class, ip, user_token) {
-    const docRef = await connection.collection('votes').doc(v4());
+    const docRef = await connection.collection('votes').doc(v4() + '+' + iso_date);
 
     var data = {
         day: iso_date,

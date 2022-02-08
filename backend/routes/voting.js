@@ -6,6 +6,7 @@ const express = require('express');
 const router = express.Router(); 
 const cache = require('memory-cache');
 const { v4 } = require('uuid');
+const sanitizer = require('sanitize')();
 
 // require logger
 const { logger } = require('../lib/logger');
@@ -71,11 +72,13 @@ router.post('/vote', async (req, res) => {
         return;
     }
 
+    const menu = sanitizer.value(req.body.menu, 'string');
+
     try {
         // data
         var data = {
             vote: req.body.vote,
-            menu: req.body.menu,
+            menu: menu,
             class: req.body.class
         }
 
@@ -88,7 +91,7 @@ router.post('/vote', async (req, res) => {
         }
 
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /votes/vote - Querying database`);
-        const dbres = await db.vote_add(connection, iso_date, req.body.vote, req.body.menu, req.body.class, req.header('X-Forwarded-For'), req.body.user_token);
+        const dbres = await db.vote_add(connection, iso_date, req.body.vote, menu, req.body.class, req.header('X-Forwarded-For'), req.body.user_token);
 
         // Set cookie to voted
         res.json(data);

@@ -45,7 +45,7 @@ router.post('/add', authenticate, async (req, res) => {
 
     try {
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/add - Querying database`);
-        const dbres = await db.add_menu(connection, iso_date, req.body.menus);
+        const dbres = await db.add_menu(connection, iso_date, sanitizer.value(req.body.menus, 'string'));
 
         res.json(dbres);
         return;
@@ -79,7 +79,7 @@ router.post('/edit', authenticate, async (req, res) => {
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/edit - Querying database`);
 
         // Update menu
-        const dbres = await db.update_menu(connection, iso_date, req.body.menus, old_menu_status.data().open);
+        const dbres = await db.update_menu(connection, iso_date, sanitizer.value(req.body.menus, 'string'), old_menu_status.data().open);
 
         res.json({
             day: dbres.day,
