@@ -142,7 +142,7 @@ async function get_results_all_class(connection, day) {
     }
 
     var me = JSON.parse(m.data().menus);
-    var menus = me.menus.map(e => { return e.name });
+    var menus = me.menus.map(e => { return e.uuid });
 
     var values = [];
     for(var cl = 1; cl < 9; cl++) {

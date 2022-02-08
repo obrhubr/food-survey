@@ -109,7 +109,7 @@ router.post('/day', authenticate, async (req, res) => {
 
     try {
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /results/day - Querying database: to get statistics `);
-        const dbres = await db.get_results_all_class(connection, req.body.day, req.body.menu);
+        const dbres = await db.get_results_all_class(connection, req.body.day);
         res.status(200).json(dbres);
         return;
     } catch (err) {
