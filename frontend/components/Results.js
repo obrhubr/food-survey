@@ -1,4 +1,5 @@
 import React from 'react';
+import CELogo from './CELogo';
 
 export default function Results(props) {
 	function getColorFromScore(score) {
@@ -47,7 +48,7 @@ export default function Results(props) {
 
 	return(
 		<>
-			<div className='mb-5 p-5 w-full'>
+			<div className='p-5 w-full'>
 				<div className='text-2xl mb-10 text-center w-full'>
 					<div>Ici tes résultats!</div>
 					<div>Merci d&apos;avoir participé!</div>
@@ -63,7 +64,7 @@ export default function Results(props) {
 						</div>
 					</div>
 
-					<div className='flex flex-col text-lg text-center mt-10 mb-5 w-full'>
+					<div className='flex flex-col text-lg text-center mt-10 w-full'>
 						<div className='w-full my-5'>
 							<div className='flex flex-row w-full my-4'>
 								<div className={'bg-red-' + matchingAvg(props.results.globalAvg, 1) + ' w-full rounded-l-lg p-6'}> </div>
@@ -90,9 +91,13 @@ export default function Results(props) {
 							</div>
 
 						</div>
+
+						<div className='w-full mt-10'>
+							<CELogo/>
+						</div>
 					</div>
 				</div>
-				<div className='flex flex-row w-full my-4'>
+				<div className=''>
 					<div className='bg-red-200'> </div>
 					<div className='bg-orange-200'> </div>
 					<div className='bg-amber-200'> </div>
