@@ -73,7 +73,7 @@ export default function Results(props) {
 								<div className={'bg-green-' + matchingAvg(props.results.globalAvg, 5) + ' w-full rounded-r-lg p-6'}> </div>
 							</div>
 							<div className='text-lg rounded-lg bg-gray-200 shadow-md p-4'>
-								{props.results.votedGlobal} {props.results.votedGlobal < 2 ? "personne a voté" : "personnes ont votés"}. La majorité de ceux qui ont choisi {props.votes.menu} à voté pour {getAverage(props.results.globalAvg)} aujourd&apos;hui!
+								{props.results.votedGlobal} {props.results.votedGlobal < 2 ? "personne a voté" : "personnes ont votés"}. La majorité de ceux qui ont choisi {props.votes.name} à voté pour {getAverage(props.results.globalAvg)} aujourd&apos;hui!
 							</div>
 						</div>
 
@@ -86,7 +86,7 @@ export default function Results(props) {
 								<div className={'bg-green-' + matchingAvg(props.results.classAvg, 5) + ' w-full rounded-r-lg p-6'}> </div>
 							</div>
 							<div className='text-lg rounded-lg bg-gray-200 shadow-md p-4'>
-								{props.results.votedClass} {getClassFromNumber(props.votes.class)}s ont votés. La majorité des {getClassFromNumber(props.votes.class)}s qui ont choisi {props.votes.menu} à voté pour {getAverage(props.results.classAvg)} aujourd&apos;hui!
+								{props.results.votedClass} {getClassFromNumber(props.votes.class)}s ont votés. La majorité des {getClassFromNumber(props.votes.class)}s qui ont choisi {props.votes.name} à voté pour {getAverage(props.results.classAvg)} aujourd&apos;hui!
 							</div>
 
 						</div>
