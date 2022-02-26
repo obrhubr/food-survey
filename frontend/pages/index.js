@@ -6,12 +6,11 @@ import VoteScore from '../components/VoteScore';
 import VoteMenu from '../components/VoteMenu';
 import Error from '../components/Error';
 import Image from 'next/image';
-import FingerprintJS from '@fingerprintjs/fingerprintjs'
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 export default function Home() {
 	const [voteStatus, setVoteStatus] = useState(false);
 	const [errorState, setErrorState] = useState("");
-	const fpPromise = FingerprintJS.load()
 
 	const [voteState, setVoteState] = useState({
         vote: undefined,
@@ -101,6 +100,7 @@ export default function Home() {
 		var delayInMilliseconds = 100;
 		setTimeout(async function() {
 			// get fp
+			const fpPromise = FingerprintJS.load()
 			const fp = await fpPromise
 			const result = await fp.get()
 			//send results
