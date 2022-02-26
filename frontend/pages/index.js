@@ -99,7 +99,7 @@ export default function Home() {
 
 		// delay to not confuse user
 		var delayInMilliseconds = 100;
-		setTimeout(function() {
+		setTimeout(async function() {
 			// get fp
 			const fp = await fpPromise
 			const result = await fp.get()
