@@ -79,8 +79,7 @@ router.post('/vote', async (req, res) => {
         var data = {
             vote: req.body.vote,
             menu: menu,
-            class: req.body.class,
-            fp: req.body.fp
+            class: req.body.class
         }
 
         // give each user a unique token, to identify them on future votes
@@ -92,7 +91,7 @@ router.post('/vote', async (req, res) => {
         }
 
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /votes/vote - Querying database`);
-        const dbres = await db.vote_add(connection, iso_date, req.body.vote, menu, req.body.class, req.header('X-Forwarded-For'), req.body.user_token);
+        const dbres = await db.vote_add(connection, iso_date, req.body.vote, menu, req.body.class, req.header('X-Forwarded-For'), req.body.user_token, req.body.fp);
 
         // Set cookie to voted
         res.json(data);

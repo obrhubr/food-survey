@@ -113,7 +113,7 @@ async function get_today_menu(connection, iso_date) {
     return {l, data: doc.data()};
 }
 
-async function vote_add(connection, iso_date, vote, menu, student_class, ip, user_token) {
+async function vote_add(connection, iso_date, vote, menu, student_class, ip, user_token, fp) {
     const docRef = await connection.collection('votes').doc(v4() + '+' + iso_date);
 
     var data = {
@@ -121,7 +121,8 @@ async function vote_add(connection, iso_date, vote, menu, student_class, ip, use
         vote: vote,
         menu: menu,
         class: student_class,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        fp: fp
     };
     if(process.env.ENVIRONMENT == "PROD") {
         data.ip = ip;
