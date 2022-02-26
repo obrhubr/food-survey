@@ -79,7 +79,8 @@ router.post('/vote', async (req, res) => {
         var data = {
             vote: req.body.vote,
             menu: menu,
-            class: req.body.class
+            class: req.body.class,
+            fp: req.body.fp
         }
 
         // give each user a unique token, to identify them on future votes
