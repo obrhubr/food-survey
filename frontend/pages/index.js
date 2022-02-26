@@ -6,10 +6,12 @@ import VoteScore from '../components/VoteScore';
 import VoteMenu from '../components/VoteMenu';
 import Error from '../components/Error';
 import Image from 'next/image';
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
 
 export default function Home() {
 	const [voteStatus, setVoteStatus] = useState(false);
 	const [errorState, setErrorState] = useState("");
+	const fpPromise = FingerprintJS.load()
 
 	const [voteState, setVoteState] = useState({
         vote: undefined,
@@ -98,6 +100,9 @@ export default function Home() {
 		// delay to not confuse user
 		var delayInMilliseconds = 100;
 		setTimeout(function() {
+			// get fp
+			const fp = await fpPromise
+			const result = await fp.get()
 			//send results
 			const URLsend = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/votes/vote';
 			axios.post(URLsend, {
@@ -106,7 +111,8 @@ export default function Home() {
 				menu: voteState.menu,
 				// Check localstorage to prevent re-voting
 				alreadyVoted: localStorage.getItem('alreadyVoted') && (new Date().getTime() - localStorage.getItem('dateVoted') < 43200000),
-				user_token: localStorage.getItem('user_token') != null ? localStorage.getItem('user_token') : null
+				user_token: localStorage.getItem('user_token') != null ? localStorage.getItem('user_token') : null,
+				fp: result.visitorId
 			}
 			).then(async (res) => {
 				// Set localstorage to prevent re-voting
