@@ -19,7 +19,7 @@ export default function MenuDialog(props) {
         let item = {...menus[index]};
         item.name = menu.name;
         item.vegetarian = menu.vegetarian;
-        item.uuid = menu.uuid;
+        item.uuid = menus[index].uuid;
         items[index] = item;
         setMenus(items);
         props.changeMenus(items)

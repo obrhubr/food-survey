@@ -29,6 +29,7 @@ export default function Menu() {
 
     function changeMenus(menus) {
         console.log("global change menus: ", menus)
+        console.log(menus, menus.filter(e => {return e.name != ""}))
         setMenusState(menus);
     }
 
