@@ -91,10 +91,6 @@ export default function Results(props) {
 							</div>
 
 						</div>
-
-						<div className='w-full mt-10'>
-							<CELogo/>
-						</div>
 					</div>
 				</div>
 				<div className=''>

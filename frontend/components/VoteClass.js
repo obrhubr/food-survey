@@ -5,7 +5,7 @@ export default function VoteScore(props) {
         <>
             <div className='w-full'>
                 <div className='text-2xl my-10 text-center w-full'>
-                    En quelle classe est-tu?
+                    En quelle classe es-tu?
                 </div>
 
                 <div className='text-lg text-black my-5 mx-2 text-center'>
@@ -31,7 +31,7 @@ export default function VoteScore(props) {
                         6ème
                     </div>
                     <div id='class-8' onClick={props.setClass} className='bg-gray-200 active:bg-gray-300 rounded-lg p-3 shadow-md my-5'>
-                        Professeur
+                        Personnel
                     </div>
                 </div>
             </div>
