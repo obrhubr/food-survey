@@ -1,0 +1,44 @@
+{
+  "dependencies": {
+    "body-parser": "^1.19.1",
+    "cors": "^2.8.5",
+    "cross-fetch": "^3.1.5",
+    "dotenv": "^14.2.0",
+    "express": "^4.17.2",
+    "express-validator": "^6.14.0",
+    "firebase-admin": "^10.0.2",
+    "jsonwebtoken": "^8.5.1",
+    "memory-cache": "^0.2.0",
+    "sanitizer": "^0.1.3",
+    "uuidv4": "^6.2.12",
+    "winston": "^3.4.0"
+  },
+  "name": "food-rating",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --colors --detectOpenHandles ./build/test/*.js ",
+    "build": "tsc --project ./",
+    "compile": "tsc",
+    "start": "node ./build/start.js"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.19.2",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/jest": "^27.4.1",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/memory-cache": "^0.2.2",
+    "@types/node": "^17.0.21",
+    "@types/sanitizer": "^0.0.28",
+    "@types/supertest": "^2.0.11",
+    "jest": "^27.0.6",
+    "supertest": "^6.1.4",
+    "ts-node": "^10.5.0",
+    "typescript": "^4.6.2"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
