@@ -172,6 +172,11 @@ export default function Menu() {
                 setResultsLoaded(false);
                 return;
             }
+
+            if (res.data.results_all.length < 1) {
+                return;
+            }
+
             setResults({ results_all: res.data.results_all, results_class: res.data.results_class });
             setMenuNames(res.data.results_all.map(e => { return e.name }));
             setMenuUuids(res.data.results_all.map(e => { return e.uuid }));
