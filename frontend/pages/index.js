@@ -106,13 +106,14 @@ export default function Home() {
 			const result = await fp.get()
 			//send results
 			const URLsend = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/votes/vote';
+			const alreadyVoted = localStorage.getItem('alreadyVoted') && (new Date().getTime() - localStorage.getItem('dateVoted') < 43200000);
 			axios.post(URLsend, {
 				vote: parseInt(voteState.vote),
 				class: parseInt(id.charAt(6).toString()),
 				menu: voteState.menu,
 				// Check localstorage to prevent re-voting
-				alreadyVoted: localStorage.getItem('alreadyVoted') && (new Date().getTime() - localStorage.getItem('dateVoted') < 43200000),
-				user_token: localStorage.getItem('user_token') != null ? localStorage.getItem('user_token') : null,
+				alreadyVoted: alreadyVoted != null ? alreadyVoted : false,
+				user_token: localStorage.getItem('user_token'),
 				fp: result.visitorId
 			}
 			).then(async (res) => {
