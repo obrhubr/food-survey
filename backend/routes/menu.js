@@ -56,7 +56,7 @@ router.post('/add', authenticate, async (req, res) => {
     try {
         // sanitize menu to prevent xss type attacks
         var sanitized_menus = {menus: req.body.menus.menus.map(e => {return { name: sanitizer.sanitize(e.name), vegetarian: e.vegetarian, uuid: v4() } })};
-        sanitized_menus.menus = sanitized_menus.menus.filter(e => { return e.name != ""; });
+        sanitized_menus.menus = sanitized_menus.menus.filter(e => { return e.name != "" && e.name != undefined; });
 
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/add - Querying database`);
         const dbres = await db.add_menu(connection, iso_date, sanitized_menus);
@@ -93,8 +93,8 @@ router.post('/edit', authenticate, async (req, res) => {
         logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/edit - Querying database`);
 
         // sanitize menu to prevent xss type attacks
-        var sanitized_menus = {menus: req.body.menus.menus.map(e => {return { name: sanitizer.sanitize(e.name), vegetarian: e.vegetarian, uuid: sanitizer.sanitize(e.uuid != null ? e.uuid : v4()) } })};
-        sanitized_menus.menus = sanitized_menus.menus.filter(e => { return e.name != ""; });
+        var sanitized_menus = {menus: req.body.menus.menus.map(e => {return { name: sanitizer.sanitize(e.name), vegetarian: e.vegetarian, uuid: sanitizer.sanitize(e.uuid != null && e.uuid != "" ? e.uuid : v4()) } })};
+        sanitized_menus.menus = sanitized_menus.menus.filter(e => { return e.name != "" && e.name != undefined; });
         // Update menu
         const dbres = await db.update_menu(connection, iso_date, sanitized_menus, old_menu_status.data().open);
 
@@ -164,6 +164,35 @@ router.get('/today', async (req, res) => {
 
 // Change status of today's menu
 router.post('/status', authenticate, async (req, res) => {
+    // Check if request is well formed
+    if(req.body.status == null || typeof req.body.status != "boolean") {
+        logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/status - Not all fields filled out `);
+        res.status(500).send({'error': 'Please fill out all the fields to edit menu.'});
+        return;
+    }
+
+    // Get today's date
+    const iso_date = iso();
+
+    try {
+        // Update menu
+        logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/status - Querying database`);
+        const dbres = await db.set_menu_status(connection, iso_date, req.body.status);
+
+        res.json(dbres);
+    } catch (err) {
+        logger.log('error', `[${res.locals.trace_id}] ROUTE: /menu/status - Error while editing menu status. `);
+        logger.log('debug', `[${res.locals.trace_id}] ${err}`);
+        res.status(500).send({'error': 'Error while editing menu.'});
+    };
+});
+
+// Change status of today's menu
+router.post('/api/status', async (req, res) => {
+    if(req.body.token !== process.env.SECRET) {
+        res.status(500).send({'error': 'Wrong token, don\'t try again please...'});
+        return;
+    }
     // Check if request is well formed
     if(req.body.status == null || typeof req.body.status != "boolean") {
         logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/status - Not all fields filled out `);
