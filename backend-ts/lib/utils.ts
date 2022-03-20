@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import sanitizer from 'sanitizer';
+import sanitizer, { sanitize } from 'sanitizer';
 
 export function sanitize_menus(menus: {name: string, vegetarian: any}[]) {
     var sanitized_menus: { menus: { name: string, vegetarian: boolean, uuid: string}[] } = {
@@ -27,4 +27,8 @@ export function sanitize_menus_edit(menus: {name: string, vegetarian: any, uuid:
     };
     sanitized_menus.menus = sanitized_menus.menus.filter((e) => { return e.name != "" && e.name != null });
     return sanitized_menus
+}
+
+export function sanitize_date(day: string) {
+    return sanitizer.sanitize(day);
 }
