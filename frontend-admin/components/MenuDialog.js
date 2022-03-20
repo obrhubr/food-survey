@@ -3,11 +3,11 @@ import { useState, useEffect } from 'react';
 import MenuInput from './MenuInput';
 
 export default function MenuDialog(props) {
-	const [menus, setMenus] = useState([]);
+	const [menus, setMenus] = useState(props.menus);
 
     useEffect(() => {
         setMenus(props.menus)
-    }, [props.menus]);
+    }, [props]);
 
     function addMenu() {
         setMenus([...menus, {name: "", vegetarian: false}]);

@@ -58,7 +58,7 @@ export default function Stats(props) {
                     <br></br>
 
                     <div className='flex items-center justify-center w-full'>
-                        <div className='m-4 w-full flex justify-center items-center cursor-pointer flex justify-center mb-3 xl:w-96'>
+                        <div className='m-4 w-full items-center cursor-pointer flex justify-center mb-3 xl:w-96'>
                             <select value={props.menuName} onChange={props.handleMenuChange} className="form-select appearance-none block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" aria-label="Default select example">
                                 {props.menuNames.map((e, i) => {
                                     return (
@@ -69,7 +69,7 @@ export default function Stats(props) {
                         </div>
                     </div>
                     <div className='flex flex-col justify-center items-center'>
-                        {props.results.results_class != null && props.results.results_all.length > 0 && props.menuName != null && props.menuName != "" ?
+                        {props.results.results_class != null && props.results.results_all.length > 0 && props.menuName != null && props.menuName != "" && props.menuUuid != null && props.menuUuid != "" ?
                             props.results.results_class[props.menuUuid][0].class_avg.map((item, i) => {
                                 return (
                                     <div key={i}>

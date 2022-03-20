@@ -5,9 +5,22 @@ import Error from '../components/Error';
 import MenuDialog from '../components/MenuDialog';
 import { useRouter } from 'next/router';
 import Stats from '../components/Stats';
+import DateSwitcher from '../components/DateSwitcher';
+
+function iso() {
+    const ts = Date.now();
+    const date_ob = new Date(ts);
+    const date = date_ob.getDate();
+    const month = date_ob.getMonth() + 1;
+    const year = date_ob.getFullYear();
+    const iso_date = year + '-' + (month < 10 ? '0' + month : month) + '-' + date;
+    return iso_date;
+}
 
 export default function Menu() {
     const router = useRouter();
+
+    const [dayState, setDayState] = useState(iso());
 
     const [menusState, setMenusState] = useState([]);
     const [saveState, setSaveState] = useState(false);
@@ -20,6 +33,7 @@ export default function Menu() {
 	const [menuUuid, setMenuUuid] = useState("");
 	const [menuNames, setMenuNames] = useState([]);
 	const [menuUuids, setMenuUuids] = useState([]);
+    const [menusLoaded, setMenusLoaded] = useState(false);
 
 	const [results, setResults] = useState({
         results_all: undefined,
@@ -28,8 +42,6 @@ export default function Menu() {
     const [resultsLoaded, setResultsLoaded] = useState(false);
 
     function changeMenus(menus) {
-        console.log("global change menus: ", menus)
-        console.log(menus, menus.filter(e => {return e.name != ""}))
         setMenusState(menus);
     }
 
@@ -60,8 +72,8 @@ export default function Menu() {
 
     function changeStatus() {
         setSaveState(true);
-        const URL = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/menu/status';
-        axios.post(URL, {status: !status, token: document.cookie.substring(6, document.cookie.length)}).then(async (res) => {
+        const URL = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/menu/day/status';
+        axios.post(URL, {status: !status, token: document.cookie.substring(6, document.cookie.length), day: dayState}).then(async (res) => {
             setStatus(!status);
             setTimeout(function(){
                 setSaveState(false);
@@ -83,8 +95,8 @@ export default function Menu() {
         setSaveState(true);
         if(created) {
             // update
-            const URL = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/menu/edit';
-            axios.post(URL, {menus: {menus: menusState.filter(e => {return e.name != ""})}, token: document.cookie.substring(6, document.cookie.length)}).then(async (res) => {
+            const URL = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/menu/day/edit';
+            axios.post(URL, {menus: {menus: menusState.filter(e => {return e.name != ""})}, token: document.cookie.substring(6, document.cookie.length), day: dayState}).then(async (res) => {
                 setTimeout(function(){
                     setSaveState(false);
                 }, 700);
@@ -101,8 +113,8 @@ export default function Menu() {
             });
         } else {
             // create
-            const URL = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/menu/add';
-            axios.post(URL, {menus: {menus: menusState.filter(e => {return e.name != null})}, token: document.cookie.substring(6, document.cookie.length)}).then(async (res) => {
+            const URL = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/menu/day/add';
+            axios.post(URL, {menus: {menus: menusState.filter(e => {return e.name != null})}, token: document.cookie.substring(6, document.cookie.length), day: dayState}).then(async (res) => {
                 setTimeout(function(){
                     setSaveState(false);
                     setCreated(true);
@@ -124,8 +136,8 @@ export default function Menu() {
     function deleteMenu() {
         setSaveState(true);
 
-        const URL = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/menu/remove';
-        axios.post(URL, {token: document.cookie.substring(6, document.cookie.length)}).then(async (res) => {
+        const URL = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/menu/day/remove';
+        axios.post(URL, {token: document.cookie.substring(6, document.cookie.length), day: dayState}).then(async (res) => {
             setMenuName("");
             setTimeout(function(){
                 setSaveState(false);
@@ -149,9 +161,10 @@ export default function Menu() {
             router.push('/');
         }
 
-        const URL = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/menu/today';
-        axios.get(URL).then(async (res) => {
-            setMenusState(res.data.menus.menus)
+        const URL = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/menu/day/today';
+        axios.post(URL, {day: dayState}).then(async (res) => {
+            setMenusLoaded(true);
+            setMenusState(res.data.menus.menus);
             setStatus(res.data.open);
             setCreated(res.data.exists);
         })
@@ -166,14 +179,18 @@ export default function Menu() {
         });
 
         // Fetch results
-        const URLResults = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/results/today';
-        axios.post(URLResults, {token: document.cookie.substring(6, document.cookie.length)}).then(async (res) => {
+        const URLResults = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/results/day';
+        axios.post(URLResults, {token: document.cookie.substring(6, document.cookie.length), day: dayState}).then(async (res) => {
             if(res.data.error != null) {
                 setResultsLoaded(false);
                 return;
             }
 
             if (res.data.results_all.length < 1) {
+                return;
+            }
+
+            if (res.data.results_class.length < 1) {
                 return;
             }
 
@@ -193,7 +210,7 @@ export default function Menu() {
                 setErrorState("Si tu vois ça et je suis à la cantine: dis moi que tout c'est cassé!");
             }
         });
-    }, [setStatus, router]);
+    }, [status, router, dayState]);
 
     return (
 		<>
@@ -226,9 +243,14 @@ export default function Menu() {
                 <div className='text-xl'>
                     Create, change or delete menu
                 </div>
+                <DateSwitcher day={dayState} setDayState={setDayState} setResultsLoaded={setResultsLoaded} setMenusLoaded={setMenusLoaded}></DateSwitcher>
                 <div className='m-4 flex flex-col justify-center items-center w-full'>
-                    <div className='m-4 flex flex-col w-1/2'>  
-                        <MenuDialog changeMenus={changeMenus} menus={menusState} />
+                    <div className='m-4 flex flex-col w-1/2'>
+                        {menusLoaded ?
+                            <MenuDialog changeMenus={changeMenus} menus={menusState} />
+                        :
+                            <></>
+                        }
                         <div className='flex flex-row items-center justify-center m-4'>
                             <div onClick={updateMenu} className='mx-4 cursor-pointer p-2 px-5 rounded-md text-white bg-green-600 hover:bg-green-700'>
                                 Update

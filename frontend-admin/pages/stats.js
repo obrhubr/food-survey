@@ -85,7 +85,7 @@ export default function Menu() {
                 :
                     <div className='md:w-1/2 w-full'>
                         <div className='flex flex-row justify-center items-center'>
-                            <div className='m-4 flex justify-center items-center cursor-pointer flex justify-center mb-3 xl:w-96'>
+                            <div className='m-4 items-center cursor-pointer flex justify-center mb-3 xl:w-96'>
                                 <select value={strategy} onChange={handleStratChange} className="form-select appearance-none block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" aria-label="Default select example">
                                     <option value="nw_most_positive">Not weighted: Most positive</option>
                                     <option value="nw_least_negative">Not weighted: Least negative</option>
