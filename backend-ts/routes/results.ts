@@ -13,6 +13,8 @@ import { exit } from 'process';
 import { logger } from '../lib/logger';
 // require authenticate
 import { authenticate } from '../lib/authenticate';
+// require the sanitizer function
+import { sanitize_date } from '../lib/utils';
 // require the iso_date function
 import { iso } from '../lib/date';
 // get db lib
@@ -40,7 +42,7 @@ router.post('/current', body('class').exists().isNumeric(), body('menu').exists(
 	// Check if the validation failed 
 	if (!validationResult(req).isEmpty()) {
 		logger.log('info', `[${res.locals.trace_id}] ROUTE: /results/current - Not all fields filled out. `);
-		res.status(500).send({error: 'Error while processing your vote, try again.'});
+		res.status(500).send({error: 'Error while processing your request, try again.'});
 		return;
 	}
 
@@ -144,13 +146,13 @@ router.post('/day', body('day').exists().isString(), authenticate, async (req, r
 	// Check if the validation failed 
 	if (!validationResult(req).isEmpty()) {
 		logger.log('info', `[${res.locals.trace_id}] ROUTE: /results/day - Not all fields filled out. `);
-		res.status(500).send({error: 'Error while processing your vote, try again.'});
+		res.status(500).send({error: 'Error while processing your request, try again.'});
 		return;
 	}
 
 	try {
 		logger.log('debug', `[${res.locals.trace_id}] ROUTE: /results/day - Querying database: to get statistics `);
-		const dbres = await db.get_results_all_class(connection, req.body.day);
+		const dbres = await db.get_results_all_class(connection, sanitize_date(req.body.day));
 		res.status(200).json(dbres);
 		return;
 	} catch (err) {

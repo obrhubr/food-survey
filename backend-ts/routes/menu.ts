@@ -92,7 +92,7 @@ router.post('/edit', body('menus').exists().isObject(), authenticate, async (req
 	// Check if the validation failed 
 	if (!validationResult(req).isEmpty()) {
 		logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/edit - Not all fields filled out. `);
-		res.status(500).send({error: 'Error while processing your vote, try again.'});
+		res.status(500).send({error: 'Error while processing your request, try again.'});
 		return;
 	}
 
@@ -169,7 +169,7 @@ router.post('/day/add', authenticate, body('menus').exists().isObject(), body('d
 		// Check if the validation failed 
 		if (!validationResult(req).isEmpty()) {
 			logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/day/add - Not all fields filled out. `);
-			res.status(500).send({error: 'Error while processing your vote, try again.'});
+			res.status(500).send({error: 'Error while processing your request, try again.'});
 			return;
 		}
 	} catch (err) {
@@ -233,7 +233,7 @@ router.post('/day/edit', body('menus').exists().isObject(), authenticate, async 
 	}
 
 	// Get the day
-	const iso_date: string = req.body.day;
+	const iso_date: string = sanitize_date(req.body.day);
 
 	try {
 		// Get old menu data
@@ -278,12 +278,12 @@ router.post('/day/remove', authenticate, body('day').exists().isString(), async 
 	// Check if the validation failed 
 	if (!validationResult(req).isEmpty()) {
 		logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/day/edit - Not all fields filled out. `);
-		res.status(500).send({error: 'Error while processing your vote, try again.'});
+		res.status(500).send({error: 'Error while processing your request, try again.'});
 		return;
 	}
 
 	// Get the date
-	const iso_date: string = req.body.day;
+	const iso_date: string = sanitize_date(req.body.day);
 
 	try {
 		logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/day/remove - Querying databas`);
@@ -347,7 +347,7 @@ router.post('/status', body('status').exists().isBoolean(), authenticate, async 
 	// Check if the validation failed 
 	if (!validationResult(req).isEmpty()) {
 		logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/status - Not all fields filled out. `);
-		res.status(500).send({error: 'Error while processing your vote, try again.'});
+		res.status(500).send({error: 'Error while processing your request, try again.'});
 		return;
 	}
 
@@ -369,14 +369,14 @@ router.post('/status', body('status').exists().isBoolean(), authenticate, async 
 });
 
 /**
- * @route "/today"
+ * @route "/day/today"
  * Route to get today's menu
 */
-router.get('/day/today', body('day').exists().isString(), async (req, res) => {
+router.post('/day/today', body('day').exists().isString(), async (req, res) => {
 	// Check if the validation failed 
 	if (!validationResult(req).isEmpty()) {
 		logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/day/status - Not all fields filled out. `);
-		res.status(500).send({error: 'Error while processing your vote, try again.'});
+		res.status(500).send({error: 'Error while processing your request, try again.'});
 		return;
 	}
 
@@ -415,14 +415,14 @@ router.get('/day/today', body('day').exists().isString(), async (req, res) => {
 });
 
 /**
- * @route POST "/status"
+ * @route POST "/day/status"
  * Route to change the status of today's vote
 */
 router.post('/day/status', body('status').exists().isBoolean(), body('day').exists().isString(), authenticate, async (req, res) => {
 	// Check if the validation failed 
 	if (!validationResult(req).isEmpty()) {
 		logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/day/status - Not all fields filled out. `);
-		res.status(500).send({error: 'Error while processing your vote, try again.'});
+		res.status(500).send({error: 'Error while processing your request, try again.'});
 		return;
 	}
 
@@ -451,7 +451,7 @@ router.post('/api/status', body('status').exists().isBoolean(), body('token').ex
 	// Check if the validation failed 
 	if (!validationResult(req).isEmpty()) {
 		logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/status - Not all fields filled out. `);
-		res.status(500).send({error: 'Error while processing your vote, try again.'});
+		res.status(500).send({error: 'Error while processing your request, try again.'});
 		return;
 	}
 
@@ -485,7 +485,7 @@ router.post('/message/add', body('message').isString(), authenticate, async (req
 	// Check if the validation failed 
 	if (!validationResult(req).isEmpty()) {
 		logger.log('info', `[${res.locals.trace_id}] ROUTE: /message/change - Not all fields filled out. `);
-		res.status(500).send({error: 'Error while processing your vote, try again.'});
+		res.status(500).send({error: 'Error while processing your request, try again.'});
 		return;
 	}
 
