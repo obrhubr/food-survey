@@ -369,6 +369,81 @@ router.post('/status', body('status').exists().isBoolean(), authenticate, async 
 });
 
 /**
+ * @route "/today"
+ * Route to get today's menu
+*/
+router.get('/day/today', body('day').exists().isString(), async (req, res) => {
+	// Check if the validation failed 
+	if (!validationResult(req).isEmpty()) {
+		logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/day/status - Not all fields filled out. `);
+		res.status(500).send({error: 'Error while processing your vote, try again.'});
+		return;
+	}
+
+	// Get today's date
+	const iso_date: string = sanitize_date(req.body.day);
+
+	try {
+		logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/day/today - Querying database`);
+		const dbres: {exists: boolean, data: {day: string, menus: string, open: boolean}} = await db.today_menu(connection, iso_date);
+
+		// Check if menu exists, if not send empty menu
+		if (!dbres.exists) {
+			logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/day/today - Menu does not yet exist`);
+			res.json({
+				menus: { menus: [] },
+				day: iso_date,
+				open: false,
+				exists: false
+			});
+		} else {
+			logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/day/today - Menu exists`);
+			res.json({
+				day: (dbres.data || { day: '' }).day,
+				menus: JSON.parse((dbres.data || { menus: [] }).menus),
+				open: (dbres.data || { open: false }).open,
+				exists: true
+			});
+			return;
+		};
+	} catch (err) {
+		logger.log('error', `[${res.locals.trace_id}] ROUTE: /menu/day/today - Error while getting menu. `);
+		logger.log('debug', `[${res.locals.trace_id}] ${err}`);
+		res.status(500).send({ error: 'Error while getting menu.' });
+		return;
+	}
+});
+
+/**
+ * @route POST "/status"
+ * Route to change the status of today's vote
+*/
+router.post('/day/status', body('status').exists().isBoolean(), body('day').exists().isString(), authenticate, async (req, res) => {
+	// Check if the validation failed 
+	if (!validationResult(req).isEmpty()) {
+		logger.log('info', `[${res.locals.trace_id}] ROUTE: /menu/day/status - Not all fields filled out. `);
+		res.status(500).send({error: 'Error while processing your vote, try again.'});
+		return;
+	}
+
+	// Get today's date
+	const iso_date: string = sanitize_date(req.body.day);
+
+	try {
+		// Update menu to set new status
+		logger.log('debug', `[${res.locals.trace_id}] ROUTE: /menu/day/status - Querying database`);
+		const dbres = await db.set_menu_status(connection, iso_date, req.body.status);
+
+		res.json(dbres);
+	} catch (err) {
+		logger.log('error', `[${res.locals.trace_id}] ROUTE: /menu/day/status - Error while editing menu status. `);
+		logger.log('debug', `[${res.locals.trace_id}] ${err}`);
+		res.status(500).send({ error: 'Error while editing menu.' });
+		return;
+	}
+});
+
+/**
  * @route POST "/status"
  * Route to change the status of today's vote programmatically (cloud scheduler)
 */
