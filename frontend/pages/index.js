@@ -8,9 +8,12 @@ import Error from '../components/Error';
 import Image from 'next/image';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 import CELogo from '../components/CELogo';
+import Message from '../components/Message';
 
 export default function Home() {
 	const [voteStatus, setVoteStatus] = useState(false);
+	const [messageState, setMessageState] = useState(false);
+	const [message, setMessageTextState] = useState({});
 	const [errorState, setErrorState] = useState("");
 
 	const [voteState, setVoteState] = useState({
@@ -63,6 +66,20 @@ export default function Home() {
 				setErrorState("Erreur fatale. Essayez encore une fois.");
 			}
         });
+
+		const URLResults = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/menu/message';
+		axios.get(URLResults).then(async (res) => {
+			setMessageTextState({text: res.data.data.message, uuid: res.data.data.uuid});
+		})
+		.catch(error => {
+			try {
+				console.log(error.response);
+				setErrorState(error.response.data.error);
+			} catch (e) {
+				console.log("OH OH:", error);
+				setErrorState("Erreur fatale. Essayez encore une fois.");
+			}
+		});
     }, [setVoteStatus, setMenuState]);
 
 	function setVote(e) {
@@ -156,6 +173,19 @@ export default function Home() {
         	});
 		}, delayInMilliseconds);
 	};
+	
+	function acknowledgeMessage() {
+		// Add the uuid of the message to localstorage
+		localStorage.setItem('message+' + message.uuid, true);
+		setMessageState(true);
+	}
+
+	function messageNotRead() {
+		// Check localstorage for message uuid
+		const readstatus = localStorage.getItem('message+'+message.uuid);
+		console.log(readstatus);
+		return readstatus != null ? readstatus : false;
+	}
 
     return (
 		<div className='flex flex-col justify-between' style={{minHeight: "100vh"}}>
@@ -171,9 +201,14 @@ export default function Home() {
 											menuState.menus.menus == null ?
 												<></>
 											:
-												<>
-													<VoteMenu menus={menuState.menus.menus} setMenu={setMenu}/>
-												</>
+												!messageState && !messageNotRead() ?
+													<>
+														<Message message={message} acknowledgeMessage={acknowledgeMessage}/>
+													</>
+												:
+													<>
+														<VoteMenu menus={menuState.menus.menus} setMenu={setMenu}/>
+													</>
 										:
 											voteState.vote == undefined ?
 												<>
