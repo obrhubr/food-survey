@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 import CELogo from './CELogo';
 
@@ -64,11 +65,11 @@ export default function Results(props) {
 						</div>
 					</div>
 
-					<a href='/ranking'>
+					<Link href='/ranking'>
 						<div className='text-lg rounded-lg bg-blue-500 shadow-md p-4 my-8 text-white text-center'>
 							Voir le ranking des menus!
 						</div>
-					</a>
+					</Link>
 
 					<div className='flex flex-col text-lg text-center mt-10 w-full'>
 						<div className='w-full my-5'>
