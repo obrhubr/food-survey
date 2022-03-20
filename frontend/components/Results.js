@@ -64,6 +64,12 @@ export default function Results(props) {
 						</div>
 					</div>
 
+					<a href='/ranking'>
+						<div className='text-lg rounded-lg bg-blue-500 shadow-md p-4 my-8 text-white text-center'>
+							Voir le ranking des menus!
+						</div>
+					</a>
+
 					<div className='flex flex-col text-lg text-center mt-10 w-full'>
 						<div className='w-full my-5'>
 							<div className='flex flex-row w-full my-4'>
