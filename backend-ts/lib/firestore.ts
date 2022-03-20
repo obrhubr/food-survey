@@ -1,7 +1,8 @@
 require('dotenv').config();
 import { v4 } from 'uuid';
 import { initializeApp, applicationDefault, cert } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getFirestore, Query } from 'firebase-admin/firestore';
+import sanitizer from 'sanitizer';
 
 /**
  * Function to initialise the firestore
@@ -326,4 +327,57 @@ export async function get_stats(connection: FirebaseFirestore.Firestore) {
 	});
 
 	return {ranking: stats};
+}
+
+/**
+ * Function to create menu
+ * @param {Connection} connection Connection to Firestore
+*/
+export async function set_message(connection: FirebaseFirestore.Firestore, message: string) {
+	const uuid: string = v4();
+	const docRef = await connection.collection('messages').doc(uuid);
+
+	const data = {
+		message: sanitizer.sanitize(message),
+		uuid: uuid,
+		createdAt: new Date().toISOString(),
+	};
+	await docRef.set(data);
+
+	return data;
+}
+
+/**
+ * Function to remove menu
+ * @param {Connection} connection Connection to Firestore
+*/
+export async function remove_message(connection: FirebaseFirestore.Firestore) {
+	const messagesRef = connection.collection("messages");
+	const lastMessage: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> = await messagesRef.orderBy('createdAt', 'desc').limit(1).get();
+	lastMessage.forEach(async (doc: {data: () => any}) => {	
+		const lastMessageUuid: string = doc.data().uuid;
+		await connection.collection('messages').doc(lastMessageUuid).delete();
+	});
+	return {"message": "Successfully deleted message."};
+}
+
+/**
+ * Function to get the last message
+ * @param {Connection} connection Connection to Firestore
+*/
+export async function get_message(connection: FirebaseFirestore.Firestore) {
+	const messagesRef = connection.collection("messages");
+	const lastMessage: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> = await messagesRef.orderBy('createdAt', 'desc').limit(1).get();
+
+	let lastMessageUuid = null;
+	lastMessage.forEach(async (doc: {data: () => any}) => {	
+		lastMessageUuid = doc.data().uuid;
+	});
+
+	if(lastMessageUuid) {
+		var l: any = await connection.collection('messages').doc(lastMessageUuid).get();
+		return {exists: l.exists, data: await l.data()};
+	}
+
+	return {exists: false, data: null};
 }

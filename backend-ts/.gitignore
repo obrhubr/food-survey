@@ -1,7 +1,7 @@
 architecture.txt
 key.json
-key.json:Zone.Identifier
 .env
 node_modules
 build
 deploy.sh
+logs/*

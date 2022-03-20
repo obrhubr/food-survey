@@ -286,3 +286,38 @@ export async function get_stats(connection: any) {
 
 	return {ranking: stats};
 }
+
+/**
+ * Function to create menu
+ * @param {Connection} connection Connection to Firestore
+*/
+export async function set_message(connection: FirebaseFirestore.Firestore, message: string) {
+	return {
+		message: "Test message2",
+		uuid: "0290677e-7ed9-45fc-a80d-ee8800b2fd54",
+		createdAt: "2022-03-20T15:52:46.985Z"
+	};
+}
+
+/**
+ * Function to remove menu
+ * @param {Connection} connection Connection to Firestore
+*/
+export async function remove_message(connection: FirebaseFirestore.Firestore) {
+	return {"message": "Successfully deleted message."};
+}
+
+/**
+ * Function to get the last message
+ * @param {Connection} connection Connection to Firestore
+*/
+export async function get_message(connection: FirebaseFirestore.Firestore) {
+	return {
+		exists: true,
+		data: {
+			createdAt: "2022-03-20T15:52:46.985Z",
+			uuid: "0290677e-7ed9-45fc-a80d-ee8800b2fd54",
+			message: "Test message2"
+		}
+	};
+}

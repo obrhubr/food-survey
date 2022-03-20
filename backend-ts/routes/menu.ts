@@ -258,3 +258,67 @@ router.post('/api/status', body('status').exists().isBoolean(), body('token').ex
 		return;
 	}
 });
+
+/**
+ * @route POST "/message/change"
+ * Change the message displayed at the start of the survey
+*/
+router.post('/message/add', body('message').isString(), authenticate, async (req, res) => {
+	// Check if the validation failed 
+	if (!validationResult(req).isEmpty()) {
+		logger.log('info', `[${res.locals.trace_id}] ROUTE: /message/change - Not all fields filled out. `);
+		res.status(500).send({error: 'Error while processing your vote, try again.'});
+		return;
+	}
+
+	try {
+		// Update menu to set new status
+		logger.log('debug', `[${res.locals.trace_id}] ROUTE: /message/change - Querying database`);
+		const dbres = await db.set_message(connection, req.body.message);
+
+		res.json(dbres);
+	} catch (err) {
+		logger.log('error', `[${res.locals.trace_id}] ROUTE: /message/change - Error while editing menu status. `);
+		logger.log('debug', `[${res.locals.trace_id}] ${err}`);
+		res.status(500).send({ error: 'Error while editing menu.' });
+		return;
+	}
+});
+
+/**
+ * @route POST "/message/remove"
+ * Remove the message
+*/
+router.post('/message/remove', authenticate, async (req, res) => {
+	try {
+		// Update menu to set new status
+		logger.log('debug', `[${res.locals.trace_id}] ROUTE: /message/remove - Querying database`);
+		const dbres = await db.remove_message(connection);
+
+		res.json(dbres);
+	} catch (err) {
+		logger.log('error', `[${res.locals.trace_id}] ROUTE: /message/remove - Error while editing menu status. `);
+		logger.log('debug', `[${res.locals.trace_id}] ${err}`);
+		res.status(500).send({ error: 'Error while editing menu.' });
+		return;
+	}
+});
+
+/**
+ * @route GET "/message"
+ * Get the message
+*/
+router.get('/message', async (req, res) => {
+	try {
+		// Update menu to set new status
+		logger.log('debug', `[${res.locals.trace_id}] ROUTE: /message - Querying database`);
+		const dbres = await db.get_message(connection);
+
+		res.json(dbres);
+	} catch (err) {
+		logger.log('error', `[${res.locals.trace_id}] ROUTE: /message - Error while editing menu status. `);
+		logger.log('debug', `[${res.locals.trace_id}] ${err}`);
+		res.status(500).send({ error: 'Error while editing menu.' });
+		return;
+	}
+});
