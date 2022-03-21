@@ -87,7 +87,7 @@ export default function Menu() {
                             Current Message:
                         </div>
                         <div className='text-center m-6 text-gray-500'>
-                            "{currentMessage}"
+                            {currentMessage}
                         </div>
                     </div>
                     <div className='mt-10 w-full flex flex-col items-center justify-center text-2xl w-1/2'>
