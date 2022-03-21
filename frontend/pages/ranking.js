@@ -25,11 +25,6 @@ export default function Menu() {
 	}
 
     useEffect(() => {
-        // check if token is present
-        if(document.cookie == '') {
-            router.push('/');
-        }
-
         const URL = process.env.NEXT_PUBLIC_API_PREFIX + '://' + process.env.NEXT_PUBLIC_API_HOST + ':' + process.env.NEXT_PUBLIC_API_PORT + '/results/ranking';
         axios.post(URL, {token: document.cookie.substring(6, document.cookie.length)}).then(async (res) => {
             setRanking(res.data.ranking.map(data => {return {"name": data.name, "day": data.day, "data": JSON.parse(data.jsondata)}}));
