@@ -21,6 +21,8 @@ export default function Stats(props) {
 			return '5ème';
 		} else if(c == 7) {
 			return '6ème';
+		} else if(c == 8) {
+			return 'Personnel';
 		}
 		return '';
 	}
@@ -29,7 +31,7 @@ export default function Stats(props) {
         <div>
             <div className='flex flex-col items-start justify-start mb-10'>
                 <div className='flex flex-col items-start justify-start text-lg text-center mt-10 mb-5 w-full'>
-                    <div className='w-full flex flex-col my-2 px-4 py-2'>
+                    <div className='w-full flex flex-col '>
                         {props.results.results_all != undefined ?
                             props.results.results_all.map((e, i) => {
                                 return (
@@ -45,7 +47,7 @@ export default function Stats(props) {
                                             <div className={'bg-green-' + matchingAvg(e.average, 5) + ' w-full rounded-r-lg py-4 px-10'}> </div>
                                         </div>
                                         <div className='text-right'>
-                                            {e.average}
+                                            {e.average.toFixed(2)}
                                         </div>
                                     </div>
                                 )
@@ -68,24 +70,24 @@ export default function Stats(props) {
                             </select>
                         </div>
                     </div>
-                    <div className='flex flex-col justify-center items-center'>
+                    <div className='flex flex-col '>
                         {props.results.results_class != null && props.results.results_all.length > 0 && props.menuName != null && props.menuName != "" && props.menuUuid != null && props.menuUuid != "" ?
                             props.results.results_class[props.menuUuid][0].class_avg.map((item, i) => {
                                 return (
                                     <div key={i}>
-                                        <div key={i} className='w-full flex flex-row my-2 px-4 py-2'>
-                                            <div className='text-left mx-2 px-2 w-full'>
+                                        <div key={i} className='flex flex-row my-2 px-4 py-2'>
+                                            <div className='text-left mx-2 px-2 w-full flex-shrink'>
                                                 Total for {getClassFromNumber(i+1)} ({props.results.results_class[props.menuUuid][0].class_total[i]} votes) for {props.menuName}: 
                                             </div>
-                                            <div className='flex flex-row w-full mx-4'>
+                                            <div className='flex flex-row w-full mx-4 flex-shrink'>
                                                 <div className={'bg-red-' + matchingAvg(item, 1) + ' w-full rounded-l-lg py-4 px-10'}> </div>
                                                 <div className={'bg-orange-' + matchingAvg(item, 2) + ' w-full py-4 px-10'}> </div>
                                                 <div className={'bg-amber-' + matchingAvg(item, 3) + ' w-full py-4 px-10'}> </div>
                                                 <div className={'bg-lime-' + matchingAvg(item, 4) + ' w-full py-4 px-10'}> </div>
                                                 <div className={'bg-green-' + matchingAvg(item, 5) + ' w-full rounded-r-lg py-4 px-10'}> </div>
                                             </div>
-                                            <div className='text-right'>
-                                                {item}
+                                            <div className='text-right flex-shrink'>
+                                                {item.toFixed(2)}
                                             </div>
                                         </div>
                                     </div>
