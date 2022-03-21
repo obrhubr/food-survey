@@ -4,7 +4,9 @@ This project was created because the cafeteria at my school (which serves fresh 
 
 ### Q: What challenges did I have to overcome, what was interesting about this project?
 
-A: The app has to be fast and interactive to maximise student participation and retention rates. I implemented a results page at the end of the survey, so students would be able to see what others thought. 
+A: The app has to be fast and interactive to maximise student participation and retention rates. I implemented a results page at the end of the survey, so students would be able to see what others thought.
+
+To inform users I also added a message popup at the beginning of the survey that can be dismissed.
 
 I also had to make sure the more technically versed students would have a hard time voting twice. I store if they have already voted in LocalStorage and send the information along with the request. If they have already voted, their vote is silently discarded. CSRF was off the table sadly, as backend and frontend are not on the same server.
 
@@ -31,6 +33,14 @@ The screen the users see when voting has not yet begun:
 
 <img src="./.github/images/not_open.png" alt="Voting not open" width="200"/>
 
+The message:
+
+<img src="./.github/images/message.png" alt="The message" width="200"/>
+
+The menu choice:
+
+<img src="./.github/images/menu.png" alt="Choose which menu you ate" width="200"/>
+
 The user is prompted to score the menu:
 
 <img src="./.github/images/score.png" alt="Select score for menu" width="200"/>
@@ -44,13 +54,17 @@ The user can now see their results and compare them:
 <img src="./.github/images/results_class.png" alt="User sees results" width="200"/>
 
 ### Staff
-Enter today's menu:
+Enter today's menu (You can add multiple menus and use the arrows on top to add menus for the next days):
 
-<img src="./.github/images/admin_menu.png" alt="Admin enter menu" width="200"/>
+<img src="./.github/images/menu_add.png" alt="Admin enter menu" width="200"/>
 
 See current results:
 
-<img src="./.github/images/admin_results.png" alt="See current results" width="200"/>
+<img src="./.github/images/results_day.png" alt="See current results" width="200"/>
+
+Change message:
+
+<img src="./.github/images/message_admin.png" alt="Change message" width="200"/>
 
 Menus are then ranked:
 
