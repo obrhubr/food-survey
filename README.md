@@ -3,6 +3,10 @@
 This project was created because the cafeteria at my school (which serves fresh meals including salads, desserts and fruits everyday) wanted to shift to a less meat-based diet. 
 They wanted to gauge the students' reactions to the new menus and I offered to build an app to do that.
 
+Here you can see one of the QR codes on a table in the wild...
+
+![QR code on a table](.github/inthewild.jpg)
+
 ### Q: What challenges did I have to overcome, what was interesting about this project?
 
 A: The app has to be fast and interactive to maximise student participation and retention rates. 
